@@ -27,7 +27,6 @@ pollster = pollster.Api()
 
 import pandas as pd
 import numpy as np
-import scipy.stats as stats
 import statsmodels.formula.api as smf
 import statsmodels.api as sm
 from pystan import StanModel 

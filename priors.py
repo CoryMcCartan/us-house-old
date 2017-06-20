@@ -1,10 +1,8 @@
 # PRIOR DATA FOR HOUSE PREDICTIONS
 
-import math
 import os
 import re
 from datetime import date
-from dateutil.relativedelta import relativedelta
 
 from urllib.request import urlopen as fetch
 
