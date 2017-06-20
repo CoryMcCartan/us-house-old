@@ -1,0 +1,8 @@
+.DS_Store
+*.tmp
+*.swp
+*.bak
+.ipynb_checkpoints/
+__pycache__/
+linzer-bayesian/
+presidential.ipynb
