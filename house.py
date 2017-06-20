@@ -286,7 +286,7 @@ def get_args():
             help="Force recompile of STAN model.")
     parser.add_argument("--model_dir", type=str, nargs="?", default="models",
             help="Directory in which models are stored.")
-    parser.add_argument("--output_file", type=str, nargs="?", default="doc/output.json",
+    parser.add_argument("--output_file", type=str, nargs="?", default="docs/output.json",
             help="File in which to output results.")
 
     return parser.parse_args()
