@@ -16,7 +16,7 @@ This is a statistical model for the biannual elections of the United States Hous
 1. Clone the repository, or [download it](https://github.com/CoryMcCartan/us-house/archive/master.zip).
 1. Install required python packages:
     ```
-    pip3 install pandas numpy scipy statsmodels fredapi us bs4 pollster pystan
+    pip3 install pandas numpy statsmodels fredapi us bs4 pollster pystan
     ```
 1. Run `./house.py`
 1. To view the analysis website, serve the `docs/` folder:
