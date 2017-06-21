@@ -3,6 +3,7 @@
 *.swp
 *.bak
 .ipynb_checkpoints/
+site/node_modules/
 __pycache__/
 linzer-bayesian/
 presidential.ipynb

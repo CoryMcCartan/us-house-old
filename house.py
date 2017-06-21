@@ -14,7 +14,8 @@ import pickle
 import os
 import argparse
 import json
-from datetime import date, datetime, timezone,
+from datetime import date
+import time
 
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
@@ -169,6 +170,8 @@ def main():
     #################################
     # Output predictions            #
     #################################
+
+    timestamp = int(time.time() * 1000)
     
     district_data = pd.DataFrame({
             "margin": expected,
@@ -182,11 +185,11 @@ def main():
             "weeks": weeks,
         })
     output_data = {
-            "time": datetime.now(timezone.utc),
-            "prob_dem": prob,
-            "prob_gop": 1-prob,
-            "dem_gain": gain,
-            "gop_gain": -gain,
+            "time": timestamp,
+            "prob": prob,
+            "gain": gain,
+            "seats": seats.mean(),
+            "seats_std": seats.std(),
             "seats_dist": seats_hist.tolist(),
             "districts": district_data.to_dict("records"),
             "generic": nat_data.to_dict("records"),
@@ -195,6 +198,22 @@ def main():
     with open(args.output_file, "w") as f:
         json.dump(output_data, f)
         print(f"Data written to {args.output_file}.")
+
+    # History
+    if os.path.isfile(args.history_file):
+        with open(args.history_file, "rb") as f:
+            history = json.load(f)
+    else:
+        history = []
+
+    history.append({
+            "time": timestamp,
+            "prob": prob,
+            "gain": gain,
+        });
+    with open(args.history_file, "w") as f:
+        json.dump(history, f)
+        print(f"Run logged to {args.history_file}.")
 
     print()
 
@@ -285,8 +304,10 @@ def get_args():
             help="Force recompile of STAN model.")
     parser.add_argument("--model_dir", type=str, nargs="?", default="models",
             help="Directory in which models are stored.")
-    parser.add_argument("--output_file", type=str, nargs="?", default="docs/output.json",
+    parser.add_argument("--output_file", type=str, nargs="?", default="docs/data/output.json",
             help="File in which to output results.")
+    parser.add_argument("--history_file", type=str, nargs="?", default="docs/data/history.json",
+            help="File in which to store model history.")
 
     return parser.parse_args()
 

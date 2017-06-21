@@ -1,0 +1,114 @@
+$font-stack: "Overpass", sans-serif
+$speed: 200ms
+$header-height: 4em
+
+$bg: #fff
+$grey: #aaa
+$med-grey: #777
+$light-grey: #ddd
+$dark-grey: #444
+$blue: #9af
+
+$break-small: 620px;
+
+*
+    box-sizing: border-box
+    font-family: $font-stack
+
+body
+    margin: 0
+    background-color: $bg
+    font-weight: 300
+
+header
+    display: flex
+    position: fixed
+    width: 100vw
+    height: $header-height
+    top: 0
+    z-index: 10
+    background: $bg
+    align-items: center
+    justify-content: center
+    padding: 0.5em
+    border-bottom: 1px solid $grey
+
+    .icon
+        height: 1.3em 
+
+    h1
+        margin: 0 0 0 0.5em
+        font-size: 1.5rem
+
+        a 
+            color: black
+            text-decoration: none
+
+    ul
+        margin: 0
+        padding: 0
+
+    li
+        display: inline-block
+        padding-right: 0.25em
+    
+    li:not(:first-child)
+        padding-left: 0.5em
+        border-left: 1px solid $grey
+
+    li a
+        color: $grey
+        text-transform: uppercase
+        text-decoration: none
+        transition: all $speed
+
+    li a:hover
+        text-decoration: underline
+        color: $med-grey
+
+main
+    margin: ($header-height + 1em) auto 5em auto
+    max-width: 960px
+    width: calc(100vw - 2em)
+
+.graphic
+    width: 100%
+
+    svg
+        display: block
+        margin: 0 auto
+
+
+section.banner
+    background: $light-grey
+    width: 100vw
+    position: absolute
+    left: 0
+    padding: 1em
+    font-size: 1.5rem
+
+    span.text
+        max-width: 960px
+        display: block
+        width: calc(100vw - 2em)
+        margin: 0 auto
+    
+
+.spacer
+    flex-grow: 1
+    flex-basis: 1em
+
+a.anchor
+    display: block
+    position: relative
+    top: -$header-height - 1em
+    visibility: hidden
+
+
+@media screen and (max-width: $break-small)
+    nav
+        display: none
+    header .spacer
+        display: none
+
+
