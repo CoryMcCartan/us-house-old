@@ -1,0 +1,96 @@
+@import vars
+
+$break-table: 480px
+
+.graphic
+    width: 100%
+
+    .dummy
+        width: 100%
+
+    svg
+        display: block
+        margin: 0 auto
+
+
+#overview .dummy
+    max-height: 350px
+    margin-bottom: -6px
+    
+
+text.prob
+    font-weight: bold
+    fill: white
+    fill-opacity: 0.5
+    text-anchor: middle
+
+.axis 
+    text
+        fill: $med-grey
+        font-size: 8pt
+
+    .label
+        font-weight: bold
+
+    path, line
+        stroke: $grey
+
+.y.axis 
+    .tick line
+        stroke-dasharray: 1,2
+    .domain
+        display: none
+
+#history
+    .line
+        stroke-width: 3
+        fill: none
+
+    .odds
+        font-size: 24pt
+        font-weight: bold
+        text-anchor: middle
+
+    .tip-prob
+        font-size: 14pt
+
+
+#outcomes
+    width: 100%
+    max-width: 720px
+    margin: 0 auto
+    line-height: 1
+    font-size: 10pt
+    border-collapse: collapse
+
+    thead tr
+        border-bottom: 1px solid $med-grey
+    tbody tr
+        border-bottom: 1px solid $light-grey
+
+    td
+        padding: 0.2em 1em
+
+    tr.expected 
+        background-color: #f0f0f0
+        td
+            font-weight: bold
+
+    td.maj
+        min-width: 7em
+    td.label
+        font-size: 9pt
+        font-weight: normal !important
+        min-width: 5rem
+        padding: 0.2em 0 0.2em 0.2em
+        color: $med-grey
+
+    td.hist
+        width: 80%
+    .hist-bar
+        height: 0.9em
+
+
+@media screen and (max-width: $break-table)
+    td.maj
+        display: none

@@ -14,7 +14,7 @@
 <body>
     <header>
         <img class="icon" src="assets/flag.gif">
-        <h1><a href="/">2018 U.S. House Predictions</a></h1>
+        <h1><a href="#summary">2018 U.S. House Predictions</a></h1>
         <span class="spacer"></span>
         <nav>
             <ul>
@@ -29,18 +29,39 @@
     <main>
         <a class="anchor" id="summary"></a>
         <section>
-            <div id="overview" class="graphic"></div>
+            <div id="overview" class="graphic">
+                <img class="dummy" src="assets/dummy-wheel.svg">
+            </div>
         </section>
 
         <section class="banner">
-            <span class="text">
-                The Democrats have a <b id="dem-chance">28%</b> chance of
-                retaking the House. <br>
-                They are expected to have <span id="dem-seats">213</span>
-                seats, a gain of <span id="dem-gain">19</span>, to the 
-                Republicans&rsquo; <span id="gop-seats">223</span>.
-            </span>
+            <span class="text"></span>
             <span class="updated"></span>
+        </section>
+
+        <section>
+            <h2>How the odds have changed</h2>
+            <div height="320" id="history" class="graphic"></div>
+        </section>
+
+        <section>
+            <h2>Likely outcomes</h2>
+            <table id="outcomes">
+                <thead>
+                <tr>
+                    <th>Dem.<br>Seats</th>
+                    <th>Rep.<br>Seats</th>
+                    <th class="maj">Majority</th>
+                    <th class="gain">Dem.<br>Gain</th>
+                    <th>Cuml.<br>Likelihood*</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+            </table>
+            <small style="text-align: center; display: block; color: #777">
+                *The chances that the Democrats will earn at least this many seats.
+            </small>
         </section>
     </main>
 

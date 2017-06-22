@@ -7,6 +7,11 @@ async function main() {
     fill_summary(data)
 
     graphics.overview(data, $("#overview"));
+    graphics.outcomes(data, $("#outcomes"));
+    
+    fetch("data/history.json")
+        .then(r => r.json())
+        .then(data => graphics.history(data, $("#history")));
 
     window.data = data;
 }
@@ -16,25 +21,7 @@ function fill_summary(data) {
     let direction = odds > 1 ? "for" : "against";
     if (direction == "against") odds = 1 / odds;
 
-    let X, Y;
-    if (odds < 3) {
-        // find closest fractional approximation
-        let best = odds;
-        for (let y = 8; y >= 1; y--) {
-            for (let x = 9; x >= y; x--) {
-                let error = Math.abs(x/y - odds);
-                if (error < best) {
-                    best = error;
-                    X = x;
-                    Y = y;
-                }
-            }
-        }
-    } else {
-        X = Math.round(odds);
-        Y = 1;
-    }
-
+    let [X, Y] = getOddsFraction(odds);
 
     $(".banner > .text").innerHTML = `
         The Democrats are expected to ${data.gain > 0 ? "gain" : "lose"}
@@ -56,6 +43,34 @@ function fill_summary(data) {
     $(".banner > .updated").innerText = `Last updated ${dateStr} at ${timeStr}.`;
 }
 
+window.getOddsFraction = function(odds) {
+    let X, Y;
+
+    if (odds < 3) {
+        let best = odds;
+
+        for (let y = 8; y >= 1; y--) {
+            for (let x = 9; x >= y; x--) {
+                let error = Math.abs(x/y - odds);
+                if (error < best) {
+                    best = error;
+                    X = x;
+                    Y = y;
+                }
+            }
+        }
+    } else {
+        X = Math.round(odds);
+        Y = 1;
+    }
+
+    return [X, Y];
+};
+
 window.$ = s => document.querySelector(s);
+window.LOG = function(val) {
+    console.log(val);
+    return (x => x);
+};
 
 main();

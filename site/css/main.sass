@@ -1,35 +1,27 @@
-$h-height: 4em
-
-$grey: #aaa
-$light-grey: #ddd
-$med-grey: #777
-$dark-grey: #444
-$blue: #9af
-
-$break-med: 620px
-$break-small: 320px
+@import vars
+@import graphics
 
 *
     box-sizing: border-box
-	font-family: "Overpass", sans-serif
+    font-family: "Overpass", sans-serif
 
 body
     margin: 0
-	background-color: #fff
-	font-weight: 300
+    background-color: #fff
+    font-weight: 300
 
 header
     display: flex
-	position: fixed
-	width: 100vw
-	height: $h-height
-	top: 0
-	z-index: 10
-	background: #fff
-	align-items: center
-	justify-content: center
-	padding: 0.5em
-	border-bottom: 1px solid $grey
+    position: fixed
+    width: 100vw
+    height: $h-height
+    top: 0
+    z-index: 10
+    background: #fff
+    align-items: center
+    justify-content: center
+    padding: 0.5em
+    border-bottom: 1px solid $grey
 
     .icon
         height: 1.3em
@@ -50,10 +42,6 @@ header
         display: inline-block
         padding-right: 0.25em
 
-    li:not(:first-child)
-        padding-left: 0.5em
-        border-left: 1px solid $grey
-
         a
             color: $grey
             text-transform: uppercase
@@ -64,25 +52,22 @@ header
             text-decoration: underline
             color: $med-grey
 
+    li:not(:first-child)
+        padding-left: 0.5em
+        border-left: 1px solid $grey
+
 main
     margin: ($h-height + 1em) auto 5em auto
-	max-width: 960px
-	width: calc(100vw - 2em)
-
-.graphic
-    width: 100%
-
-    svg
-        display: block
-        margin: 0 auto
+    max-width: 900px
+    width: calc(100vw - 2em)
 
 .banner
     padding: 1em 0
-	font-size: 2rem
-	line-height: 1.25
-	background: $light-grey
-	box-shadow: -50vw 0 $light-grey, 50vw 0 $light-grey
-	margin-bottom: 1em
+    font-size: 2rem
+    line-height: 1.25
+    background: $light-grey
+    box-shadow: -50vw 0 $light-grey, 50vw 0 $light-grey
+    margin-bottom: 1em
 
     .updated
         display: block
@@ -95,19 +80,19 @@ h1, h2, h3, h4
 
 .spacer
     flex-grow: 1
-	flex-basis: 1em
+    flex-basis: 1em
 
 a.anchor
     display: block
-	position: relative
-	top: -5em
-	visibility: hidden
+    position: relative
+    top: -5em
+    visibility: hidden
 
 svg:empty
     background: $blue
 
 
-@media screen and max-width: $break-med
+@media screen and (max-width: $break-med)
     nav
         display: none
 
@@ -117,7 +102,7 @@ svg:empty
     .banner
         font-size: 1.5rem
 
-@media screen and max-width: $break-small
+@media screen and (max-width: $break-small)
     header h1
         font-size: 1.2rem
 
