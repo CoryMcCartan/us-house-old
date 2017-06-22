@@ -1,6 +1,7 @@
 @import vars
 
 $break-table: 480px
+$break-small-table: 360px
 
 .graphic
     width: 100%
@@ -70,18 +71,17 @@ text.prob
 
     td
         padding: 0.2em 1em
+        white-space: nowrap
 
     tr.expected 
         background-color: #f0f0f0
         td
             font-weight: bold
 
-    td.maj
-        min-width: 7em
     td.label
         font-size: 9pt
         font-weight: normal !important
-        min-width: 5rem
+        text-align: right
         padding: 0.2em 0 0.2em 0.2em
         color: $med-grey
 
@@ -92,5 +92,9 @@ text.prob
 
 
 @media screen and (max-width: $break-table)
-    td.maj
+    .maj
+        display: none
+
+@media screen and (max-width: $break-small-table)
+    .gain
         display: none

@@ -477,8 +477,7 @@ function outcomes(data, el) {
             d == currentSeats ? "◀ Current" : 
             d == mean ? "◀ Expected" : "",
         ][i])
-        .attr("class", (d, i) => [,,"maj",,,"hist","label"][i]);
-        
+        .attr("class", (d, i) => [,,"maj","gain",,"hist","label"][i]);
 }
 
 export default {
