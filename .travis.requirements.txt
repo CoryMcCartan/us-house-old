@@ -4,4 +4,5 @@ statsmodels
 us
 bs4
 pollster
+lxml
 pystan
