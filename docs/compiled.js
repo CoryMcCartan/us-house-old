@@ -17296,6 +17296,237 @@ function history(data, el) {
 }
 
 /*
+ * Create a polling graphic.
+ * Line plot of generic congressional ballot over time.
+ */
+function generic(data, el) {
+    data = data.generic.map(d => ({ 
+        date: new Date(d.weeks),
+        margin: d.margin / 100,
+        top: (d.margin + 2*d.std) / 100,
+        bot: (d.margin - 2*d.std) / 100,
+        std: d.std / 100,
+    }));
+    window.generic = data;
+
+    let svg = select(el).append("svg");
+
+    const margin = { L: 40, R: 100, T: 20, B: 10 };
+    let w = el.clientWidth;
+    let h = 320;
+    w -= margin.L + margin.R;
+    h -= margin.T + margin.B;
+
+    let g = svg.append("g")
+        .attr("transform", `translate(${margin.L},${margin.T})`);
+
+    let last = data.length - 1;
+    let startDate = data[0].date;
+    let endDate = data[last].date;
+    let today = Date.now();
+
+    let x = time()
+        .domain([startDate, endDate]);
+    let bisector$$1 = bisector(d => d.date).left;
+
+    let y = linear$2()
+        .domain([1.05*min(data, d => d.bot), 1.05*max(data, d => d.top)])
+        .nice();
+    let probFormat = format(".0%");
+
+    g.append("g")
+        .attr("class", "x axis");
+    let y_el = g.append("g")
+        .attr("class", "y axis");
+    
+    y_el.append("text")
+        .attr("class", "label")
+        .attr("transform", `rotate(-90)`)
+        .attr("dy", -30)
+        .style("text-anchor", "end")
+        .text("DEM. MARGIN");
+
+    const ONE_DAY = 1000 * 60 * 60 * 24;
+    g.append("path")
+        .datum(data.filter(d => d.date <= today + 3*ONE_DAY))
+        .attr("class", "past line");
+    g.append("path")
+        .datum(data.filter(d => d.date >= today - 3*ONE_DAY))
+        .attr("class", "future line")
+        .style("stroke-dasharray", "4,4");
+
+    g.append("path")
+        .datum(data)
+        .attr("class", "err top");
+    g.append("path")
+        .datum(data)
+        .attr("class", "err bot");
+
+    let nowBox = g.append("g");
+    let nowLine = nowBox.append("line")
+        .attr("y1", 0)
+        .attr("y2", h+1)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("marker-start", "url(#triangle)");
+    let nowText = nowBox.append("text")
+        .attr("dy", -6)
+        .style("font-size", "9pt")
+        .style("font-weight", "bold")
+        .style("text-anchor", "middle")
+        .text("Today");
+    let future = nowBox.append("rect")
+        .attr("height", h+1)
+        .style("fill", "black")
+        .style("opacity", 0.04);
+
+    // tooltip box
+    let box = g.append("g");
+    let shade = box.append("rect")
+        .attr("height", h+1)
+        .attr("width", margin.R)
+        .style("fill", "white")
+        .style("fill-opacity", 0.8);
+    let dateLine = box.append("line")
+        .attr("y1", 0)
+        .attr("y2", h+1)
+        .attr("stroke", "black")
+        .attr("stroke-width", 1)
+        .attr("marker-start", "url(#triangle)");
+    let dateText = box.append("text")
+        .attr("dy", -6)
+        .style("font-size", "9pt")
+        .style("font-weight", "bold")
+        .style("text-anchor", "middle");
+    let dateFormat = timeFormat("%B %-d");
+
+    let marginText = box.append("text")
+        .attr("x", 4)
+        .style("font-size", "20pt")
+        .style("font-weight", "bold");
+    let errorText = box.append("text")
+        .attr("x", 4)
+        .attr("dx", 1)
+        .attr("dy", 5)
+        .style("font-size", "12pt")
+        .style("fill", "#777")
+        .style("alignment-baseline", "hanging");
+    let marginFormat = format("+.1%");
+    let errorFormat = format(".0%");
+
+    let defs = svg.append("defs");
+    defs.append("marker")
+        .attr("id", "triangle")
+        .attr("viewBox", "0 -5 10 10")
+        .attr("markerWidth", 6)
+        .attr("markerHeight", 6)
+        .attr("orient", "auto")
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("class","arrowHead");
+
+    function draw() {
+        w = el.clientWidth; 
+        h = 320;
+        
+        svg
+            .attr("width", w)
+            .attr("height", h);
+
+        w -= margin.L + margin.R;
+        h -= margin.T + margin.B;
+
+        let nTicks = [2, 4, 6, 8, 10, 10];
+        nTicks = nTicks[~~(w / 160)];
+
+        x.rangeRound([0, w]);
+        y.rangeRound([h, 0]);
+
+        let xAxis = axisBottom(x)
+            .tickSizeOuter(0)
+            .ticks(nTicks);
+        let yAxis = axisLeft(y)
+            .tickSizeInner(-w)
+            .tickFormat(probFormat);
+
+        select(".x.axis")
+            .attr("transform", `translate(0, ${y(0)})`)
+            .call(xAxis);
+
+        select(".y.axis")
+            .call(yAxis);
+
+        nowBox.attr("transform", `translate(${x(today)},0)`);
+        future.attr("width", w - x(today));
+
+        let line$$1 = line()
+            .x(d => x(d.date))
+            .y(d => y(d.margin));
+        select(".past.line").attr("d", line$$1);
+        select(".future.line").attr("d", line$$1);
+
+        let errTop = area$2()
+            .x(d => x(d.date))
+            .y0(d => y(d.margin))
+            .y1(d => y(d.top));
+        let errBot = area$2()
+            .x(d => x(d.date))
+            .y0(d => y(d.bot))
+            .y1(d => y(d.margin));
+        
+        select(".err.top").attr("d", errTop);
+        select(".err.bot").attr("d", errBot);
+
+        resetTooltip();
+    }
+
+    function resetTooltip() {
+        box.attr("transform", `translate(${w}, 0)`);
+        shade.attr("width", margin.R);
+        dateText.text("Election Day");
+        nowText.style("opacity", 1);
+
+        let mrg = data[last].margin;
+        marginText
+            .text(marginFormat(mrg))
+            .style("fill", mrg > 0 ? BLUE : RED)
+            .attr("y", y(mrg));
+        errorText
+            .text("±" + errorFormat(2*data[last].std))
+            .attr("y", y(mrg));
+    }
+
+    draw();
+    window.addEventListener("resize", () => draw());
+
+    svg.on("mousemove", function() {
+        let [mx, my] = mouse(g.node());
+
+        if (mx > w) mx = w;
+        if (mx < 0) mx = 0;
+
+        let xval = x.invert(mx);
+        let idx = bisector$$1(data, xval);
+        let closest = data[Math.min(last, idx)];
+
+        box.attr("transform", `translate(${mx}, 0)`);
+        shade.attr("width", w - mx + margin.R);
+        dateText.text(dateFormat(xval));
+        nowText.style("opacity", 0);
+
+        let mrg = closest.margin;
+        marginText
+            .text(marginFormat(mrg))
+            .style("fill", mrg > 0 ? BLUE : RED)
+            .attr("y", y(mrg));
+        errorText
+            .text("±" + errorFormat(2*closest.std))
+            .attr("y", y(mrg));
+    });
+    svg.on("mouseout", resetTooltip);
+}
+
+/*
  * Create a table of likely outcomes.
  * Includes a vertical histogram.
  */
@@ -17346,26 +17577,110 @@ function outcomes(data, el) {
         .attr("class", (d, i) => [,,"maj","gain",,"hist","label"][i]);
 }
 
+/*
+ * Create a table with all the races.
+ * Broken up into five tables
+ */
+function races(data, states, root) {
+    let partitions = {
+        strong_dem: [],
+        lean_dem: [],
+        tossup: [],
+        lean_gop: [],
+        strong_gop: [],
+    };
+
+    for (let race of data.districts) {
+        if (race.margin > 0.2)
+            partitions.strong_dem.push(race);
+        else if (race.margin > 0.1)
+            partitions.lean_dem.push(race);
+        else if (race.margin > -0.1)
+            partitions.tossup.push(race);
+        else if (race.margin > -0.2)
+            partitions.lean_gop.push(race);
+        else
+            partitions.strong_gop.push(race);
+    }
+
+    let tables = select(root)
+        .selectAll("table.races")
+        .datum(function() { return partitions[this.id] });
+
+    tables.append("thead")
+        .append("tr")
+        .selectAll("th")
+        .data(["District", "Dem.", "Rep.", "Margin"])
+        .enter().append("th")
+        .text(d => d);
+
+    let rows = tables.append("tbody")
+        .selectAll("tr")
+        .data(d => d)
+        .enter().append("tr");
+
+    let distStr = function(race) {
+        let [state, district] = race.split("-");
+        if (district == "00")
+            district = "";
+        else
+            district = +district;
+
+        return `${states.abbr_to_ap[state]} ${district}`;
+    };
+    let probFmt = format(".0%");
+    let marginFmt = x => `${(x>0 ? "D" : "R")}+${Math.abs(Math.round(100*x))}`;
+
+    rows.selectAll("td")
+        .data(d => [
+            distStr(d.district),
+            d.prob,
+            1 - d.prob,
+            d.margin
+        ])
+        .enter().append("td")
+        .text((d, i) => [d, probFmt(d), probFmt(d), marginFmt(d)][i])
+        .attr("class", (d, i) => [,"prob","prob","margin"][i])
+        .style("color", (d, i) => [
+            "black",
+            d > 0.5 ? "white" : "black",
+            d > 0.5 ? "white" : "black",
+            d > 0 ? BLUE : RED
+        ][i])
+        .style("background-color", (d, i) => [,
+            d > 0.5 ? BLUE : "",
+            d > 0.5 ? RED : "",, 
+        ][i])
+        .style("background-color", (d, i) => [,d>0.5 ? BLUE:"",d>0.5 ? RED:"",][i]);
+
+}
+
 var graphics = {
     overview,
     history,
+    generic,
     outcomes,
+    races,
 };
 
 async function main() {
     let resp = await fetch("data/output.json");
     let data = await resp.json();
+    window.data = data;
 
     fill_summary(data);
-
-    graphics.overview(data, $("#overview"));
-    graphics.outcomes(data, $("#outcomes"));
     
     fetch("data/history.json")
         .then(r => r.json())
         .then(data => graphics.history(data, $("#history")));
 
-    window.data = data;
+    graphics.overview(data, $("#overview"));
+    graphics.outcomes(data, $("#outcomes"));
+    graphics.generic(data, $("#generic"));
+
+    resp = await fetch("data/states.json");
+    let states = await resp.json();
+    graphics.races(data, states, $(".tables"));
 }
 
 function fill_summary(data) {
@@ -17422,7 +17737,7 @@ window.getOddsFraction = function(odds) {
 window.$ = s => document.querySelector(s);
 window.LOG = function(val) {
     console.log(val);
-    return (x => x);
+    return val;
 };
 
 main();

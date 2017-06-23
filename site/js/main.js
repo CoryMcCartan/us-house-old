@@ -3,17 +3,21 @@ import graphics from "./graphics";
 async function main() {
     let resp = await fetch("data/output.json");
     let data = await resp.json();
+    window.data = data;
 
-    fill_summary(data)
-
-    graphics.overview(data, $("#overview"));
-    graphics.outcomes(data, $("#outcomes"));
+    fill_summary(data);
     
     fetch("data/history.json")
         .then(r => r.json())
         .then(data => graphics.history(data, $("#history")));
 
-    window.data = data;
+    graphics.overview(data, $("#overview"));
+    graphics.outcomes(data, $("#outcomes"));
+    graphics.generic(data, $("#generic"));
+
+    resp = await fetch("data/states.json");
+    let states = await resp.json();
+    graphics.races(data, states, $(".tables"));
 }
 
 function fill_summary(data) {
@@ -70,7 +74,7 @@ window.getOddsFraction = function(odds) {
 window.$ = s => document.querySelector(s);
 window.LOG = function(val) {
     console.log(val);
-    return (x => x);
+    return val;
 };
 
 main();

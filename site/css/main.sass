@@ -58,8 +58,9 @@ header
 
 main
     margin: ($h-height + 1em) auto 5em auto
-    max-width: 900px
+    max-width: $center
     width: calc(100vw - 2em)
+    min-height: 100vh
 
 .banner
     padding: 1em 0
@@ -74,6 +75,24 @@ main
         font-size: 0.8rem
         color: $med-grey
         margin: 0.6rem auto -0.4rem
+
+
+
+footer
+    padding: 1em
+    width: 100vw
+    background-color: $dark-grey
+    font-size: 10pt
+    color: $grey
+
+    div
+        margin: 0 auto
+        width: 100%
+        max-width: $center
+
+    a
+        color: $grey
+
 
 h1, h2, h3, h4
     line-height: 1.15

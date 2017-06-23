@@ -14,7 +14,7 @@ import pickle
 import os
 import argparse
 import json
-from datetime import date
+from datetime import date, timedelta
 import time
 
 import warnings
@@ -40,6 +40,7 @@ def main():
     args = get_args()
 
     election_day = date(2018, 11, 6)
+    current_seats = 194
 
     print("===========================================")
     print("  2018 U.S. HOUSE PREDICTIONS              ")
@@ -158,7 +159,7 @@ def main():
     seats = np.sum((np.sign(results) + 1) / 2, axis=1).astype(int)
     seats_hist = np.bincount(seats, minlength=436) / len(seats)
     prob = np.mean(seats >= 218)
-    gain = np.mean(seats) - 194
+    gain = np.mean(seats) - current_seats
 
     print()
     print(f"National Prediction: {'D' if nat_prediction >= 0 else 'R'}+{abs(nat_prediction):.1f}%")
@@ -193,6 +194,10 @@ def main():
             "seats_dist": seats_hist.tolist(),
             "districts": district_data.to_dict("records"),
             "generic": nat_data.to_dict("records"),
+            "scenarios": {
+                "dem_gain": sum(seats > current_seats) / len(seats),
+                "gop_gain": sum(seats < current_seats) / len(seats),
+                }
             }
 
     with open(args.output_file, "w") as f:
@@ -219,8 +224,9 @@ def main():
 
 
 
-def get_polling_data(year=2018, day=6):
-    election_day = date(year, 11, day)
+def get_polling_data(year=2018):
+    nov_1 = date(year, 11, 1)
+    election_day = nov_1 + timedelta(days=(1 - nov_1.weekday() + 7) % 7)
 
     polls = pollster.questions_slug_poll_responses_clean_tsv_get(f"{str(year)[-2:]}-US-House")
     polls = polls[polls.sample_subpopulation.isin(["Likely Voters", "Registered Voters"])]
