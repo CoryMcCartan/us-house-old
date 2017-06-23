@@ -354,21 +354,21 @@ function history(data, el) {
                 }
             });
 
-        d3.select(".x.axis")
+        svg.select(".x.axis")
             .attr("transform", `translate(0, ${y(0)})`)
             .call(xAxis);
 
-        d3.select(".y.axis")
+        svg.select(".y.axis")
             .call(yAxis);
 
         let line = d3.line()
             .x(d => x(d.date))
             .y(d => y(d.odds));
 
-        d3.select(".dem.line").attr("d", line);
+        svg.select(".dem.line").attr("d", line);
 
         line.y(d => y(-d.odds))
-        d3.select(".gop.line").attr("d", line);
+        svg.select(".gop.line").attr("d", line);
 
         resetTooltip();
     }
@@ -445,7 +445,7 @@ function generic(data, el) {
 
     let svg = d3.select(el).append("svg");
 
-    const margin = { L: 40, R: 100, T: 20, B: 10 };
+    const margin = { L: 40, R: 90, T: 20, B: 10 };
     let w = el.clientWidth;
     let h = 320;
     w -= margin.L + margin.R;
@@ -583,11 +583,11 @@ function generic(data, el) {
             .tickSizeInner(-w)
             .tickFormat(probFormat);
 
-        d3.select(".x.axis")
+        svg.select(".x.axis")
             .attr("transform", `translate(0, ${y(0)})`)
             .call(xAxis);
 
-        d3.select(".y.axis")
+        svg.select(".y.axis")
             .call(yAxis);
 
         nowBox.attr("transform", `translate(${x(today)},0)`);
@@ -596,8 +596,8 @@ function generic(data, el) {
         let line = d3.line()
             .x(d => x(d.date))
             .y(d => y(d.margin));
-        d3.select(".past.line").attr("d", line);
-        d3.select(".future.line").attr("d", line);
+        svg.select(".past.line").attr("d", line);
+        svg.select(".future.line").attr("d", line);
 
         let errTop = d3.area()
             .x(d => x(d.date))
@@ -608,8 +608,8 @@ function generic(data, el) {
             .y0(d => y(d.bot))
             .y1(d => y(d.margin));
         
-        d3.select(".err.top").attr("d", errTop);
-        d3.select(".err.bot").attr("d", errBot);
+        svg.select(".err.top").attr("d", errTop);
+        svg.select(".err.bot").attr("d", errBot);
 
         resetTooltip();
     }
@@ -631,7 +631,7 @@ function generic(data, el) {
     }
 
     draw();
-    window.addEventListener("resize", () => draw());
+    window.addEventListener("resize", draw);
 
     svg.on("mousemove", function() {
         let [mx, my] = d3.mouse(g.node());
@@ -786,7 +786,6 @@ function races(data, states, root) {
             d > 0.5 ? RED : "",, 
         ][i])
         .style("background-color", (d, i) => [,d>0.5 ? BLUE:"",d>0.5 ? RED:"",][i])
-
 }
 
 export default {

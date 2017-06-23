@@ -10,7 +10,7 @@
     "build:js": "npm run build:js:compile && npm run build:js:minify",
     "build:css": "node-sass --output-style=compressed --source-map=true css/main.sass ../docs/main.css",
     "build": "cp index.html ../docs/ && npm run build:js && npm run build:css",
-    "watch:js": "onchange 'js/*.js' -- npm run build:js:compile",
+    "watch:js": "onchange 'js/*.js' -- npm run build:js",
     "watch:css": "onchange 'css/*.sass' -- npm run build:css",
     "watch:html": "onchange 'index.html' -- cp index.html ../docs/",
     "watch": "npm run watch:js & npm run watch:css & npm run watch:html & ",

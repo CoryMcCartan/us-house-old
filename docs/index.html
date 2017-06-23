@@ -13,7 +13,9 @@
 
     <script type="text/x-mathjax-config">
         MathJax.Hub.Config({
-          tex2jax: {inlineMath: [['$','$']]}
+            messageStyle: "none",
+            CommonHTML: { linebreaks: { automatic: true } },
+            tex2jax: {inlineMath: [['$','$']]}
         });
     </script>
     <script type="text/javascript" async 
@@ -227,6 +229,6 @@
             <a href="http://elections.huffingtonpost.com/pollster/api/v2" target="_blank">API</a>.
         </div>
     </footer>
-    <script src="compiled.js"></script>
+    <script src="compiled.min.js"></script>
 </body>
 </html>
