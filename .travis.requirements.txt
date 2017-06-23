@@ -1,5 +1,6 @@
 pandas
 numpy
+statsmodels
 us
 bs4
 pollster
