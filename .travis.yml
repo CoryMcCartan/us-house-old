@@ -1,4 +1,11 @@
 language: python
 python: "3.6"
-script: "./house.py"
+script: "./house.py --recompile"
 install: "pip install -r .travis.requirements.txt"
+deploy:
+    provider: pages
+    skip_cleanup: true
+    github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+    on:
+        branch: master
+    local_dir: "docs"
