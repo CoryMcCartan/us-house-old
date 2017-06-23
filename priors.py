@@ -8,12 +8,10 @@ from urllib.request import urlopen as fetch
 
 import pandas as pd
 import numpy as np
-import scipy.stats as stats
 import statsmodels.formula.api as smf
 import statsmodels.api as sm
 from statsmodels.regression.linear_model import OLSResults
 
-from fredapi import Fred
 import us
 
 
@@ -186,6 +184,7 @@ def get_error_by_year():
 
 # YEARLY GDP GROWTH
 def get_gdp_data():
+    from fredapi import Fred
     FRED = Fred("75d3a2383e8806d7b956a4849aff66a9")
     return FRED.get_series('A191RL1A225NBEA', observation_start='1940-01-01')
 
