@@ -768,24 +768,27 @@ function races(data, states, root) {
     rows.selectAll("td")
         .data(d => [
             distStr(d.district),
-            d.prob,
-            1 - d.prob,
+            [d.prob, d.incumbent],
+            [1 - d.prob, d.incumbent],
             d.margin
         ])
         .enter().append("td")
-        .text((d, i) => [d, probFmt(d), probFmt(d), marginFmt(d)][i])
-        .attr("class", (d, i) => [,"prob","prob","margin"][i])
+        .text((d, i) => [d, probFmt(d[0]), probFmt(d[0]), marginFmt(d)][i])
+        .classed("prob", (d, i) => i == 1 || i == 2)
+        //.classed("dem pickup", (d, i) => i === 1 && d[0] > 0.5 && d[1] === -1)
+        .classed("d_pickup", (d, i) => i === 1 && d[0] > 0.5 && d[1] === -1)
+        .classed("r_pickup", (d, i) => i === 2 && d[0] > 0.5 && d[1] === 1)
+        .classed("margin", (d, i) => i == 3)
         .style("color", (d, i) => [
             "black",
-            d > 0.5 ? "white" : "black",
-            d > 0.5 ? "white" : "black",
+            d[0] > 0.5 ? "white" : "black",
+            d[0] > 0.5 ? "white" : "black",
             d > 0 ? BLUE : RED
         ][i])
         .style("background-color", (d, i) => [,
-            d > 0.5 ? BLUE : "",
-            d > 0.5 ? RED : "",, 
-        ][i])
-        .style("background-color", (d, i) => [,d>0.5 ? BLUE:"",d>0.5 ? RED:"",][i])
+            d[0] > 0.5 ? BLUE : "",
+            d[0] > 0.5 ? RED : "",, 
+        ][i]);
 }
 
 export default {

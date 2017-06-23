@@ -133,7 +133,9 @@ def main():
 
     race_prior_data = []
     races = incumbents.district.unique()
+    incumbent_series = []
     for race in races:
+        incumbent_series.append(incumbents.loc[race].incumbent)
         race_prior_data.append({ 
             "NAT": y[-1],
             "INC": 0 if race in not_running else incumbents.loc[race].incumbent,
@@ -176,7 +178,8 @@ def main():
             "margin": expected,
             "std": expected_std,
             "prob": prob_district,
-            "district": races
+            "district": races,
+            "incumbent": incumbent_series,
         })
     nat_data = pd.DataFrame({
             "margin": y,
