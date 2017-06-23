@@ -1,0 +1,8 @@
+pandas
+numpy
+statsmodels
+fredapi
+us
+bs4
+pollster
+pystan
