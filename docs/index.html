@@ -137,9 +137,9 @@
             respondents who say they would vote for each party's House
             candidate. The number of respondents choosing the Democrat is
             $N_i^D$, which is drawn from a Binomial distribution,
-            $$ N_i^D \sim \mathrm{Binomial}(N_i, \pi_i+0.5) $$
-            where $\pi_i$ is the margin of support for the Democrats over the
-            Republicans in this poll.  Why not use $\mu$? Pollsters sample
+            $$ N_i^D \sim \mathrm{Binomial}(N_i, \pi_i) $$
+            where $\pi_i$ is the level of support for the Democrats in this poll. 
+            Why not use $\mu$? Pollsters sample
             differently and have different methodologies, and so the margin of
             support they measure is different from the true margin.
 
