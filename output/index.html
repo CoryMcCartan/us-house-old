@@ -128,7 +128,7 @@
             For each poll $i$:
             <ul>
                 <li>The sample size is denoted $N_i$.</li>
-                <li>The time at which the poll was conducted is denoted $t_i$.
+                <li>The time at which the poll was conducted is denoted $w_i$.
                     Time is discretized on a weekly basis.</li>
                 <li>The polling firm conducting the poll is denoted $p_i$.</li>
             </ul>
@@ -147,20 +147,23 @@
             particular poll.  There is pollster-specific error and bias,
             sampling error, and statewide polling error (shared by all polling
             firms). So we can decompose $\pi_i$ into  components, $$
-            \mathrm{logit}(\pi_i) = \mu[t_i] + \alpha_p[p_i] + \alpha_n +
+            \mathrm{logit}(\pi_i) = \mu[w_i] + \alpha_p[p_i] + \alpha_n +
             \epsilon, $$
             where $\alpha_p$ is pollster-specific error, $\alpha_n$ is national
-            polling error, amd $\epsilon$ is sampling error. Polling firms can
+            polling error, and $\epsilon$ is sampling error. Polling firms can
             be biased towards either party:
             $$ \begin{align}
                 \alpha_p[p_i] &\sim \mathrm{Normal}(0, \sigma_p) \\
                 \sigma_p &\sim \mathrm{Uniform}(0, 10\%)
             \end{align} $$
             National polling error can also go either way. We use the
-            historical bias as our prior (average bias of 2.70% and a standard
-            deviation in bias of 5.63%):
+            historical bias as our prior, which is larger the farther out we are 
+            from the election. By election day, national polling is on average
+            biased 2.70% toward the Democrats, with a standard deviation of 
+            5.63%. Bias is estimated on a monthly basis (where $bias_m$ is the 
+            historical bias in the national polling):
             $$ \begin{align}
-                \alpha_n &\sim \mathrm{Normal}(2.70\%, \sigma_n) \\
+                \alpha_n[m]  &\sim \mathrm{Normal}(bias_m, \sigma_n) \\
                 \log(\sigma_n) &\sim \mathrm{Normal}(\log(5.63\%), 1)
             \end{align} $$
             Measurement noise is normally distributed around zero, with a
@@ -172,7 +175,8 @@
             walk prior for $\mu$:
             $$ \mu[t-1] \sim \mathrm{Normal}(\mu[t], \sigma). $$
             We assume a uniform prior for $\sigma$ between 0 and 10%.  This
-            smoothing is also caried forward towards election day.
+            random walk is also carried forward towards election day, to forecast 
+            future changes in the national sentiment.
             </p>
 
             <h3>National Vote Margin Forecasting</h3>
@@ -180,42 +184,47 @@
             We use a normal distribution as our prior for the final vote
             margin. The mean and variance of the distribution come from a
             linear model:
-            $$
-            \mathbf{E}(\mu[T]) = a_0 + a_1APPR + a_2INC\times PRES + a_3PRES\times MID + e_a,
-            $$
-            where $T$ is Election Day, $INC$ a categorical variable
-            representing the incumbent majority party ($+1$ for the Democrats,
-            $-1$ for the Republicans), $PRES$ is the sitting president's party
-            (1 for a Democrat, $-1$ for a Republican), $APPR$ is the average of
+            $$ \begin{align}
+                \mu[W] &\sim \mathrm{Normal}(MRG, \sqrt{MSE_{MRG}}) \\
+                MRG &= a_0 + a_1APPR + a_2INC\times PRES + a_3PRES\times MID + e_a,
+            \end{align} $$
+            where $W$ is Election Day, $MRG$ is the expected national popular
+            vote margin, $INC$ a categorical variable
+            representing the incumbent majority party (+1 for the Democrats,
+            –1 for the Republicans), $PRES$ is the sitting president's party
+            (+1 for a Democrat, –1 for a Republican), $APPR$ is the average of
             sitting president's approval rating from January to June before the
             election, and $MID$ represents whether the election is a midterm (1
-            if it is, 0 if not). So we calculate $MRG$ for this election, and
-            use the MSE of the regression as our estimate for variance.
+            if it is, 0 if not). 
             </p>
 
             <h3>House Race Forecasting</h3>
             <p>
             We use a linear model to forecast the margin each House race,
             $\mu_r$:
-            $$
-            \mu_r \sim \mathrm{Multivariate\ Normal}(\mathrm{logit}(
-            b_0 + b_1\mu[T] + b_2INC_r + b_3PVI_r + b_4PVI_r\times PRES + e_b), \mathbf{\Sigma}),
-            $$
+            $$ \begin{align}
+                \mu_r &\sim \mathrm{Multivariate\ Normal}(\mathrm{logit}(
+                    b_0 + b_1\mu[T] + b_2INC_r + b_3PVI_r + b_4PVI_r\times PRES 
+                    + e_b), \mathbf{\Sigma}) \\
+
+                \mathbf{\Sigma} &= \begin{pmatrix}
+                    \sigma_h & \Sigma_h & \dots & \Sigma_h \\
+                    \Sigma_h & \sigma_h & \dots & \Sigma_h \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \Sigma_h & \Sigma_h & \dots & \sigma_h
+                \end{pmatrix} + MSE_{MRG}
+            \end{align} $$
             where $INC_r$ is a categorical variable representing the incumbent
-            in the race ($+1$ for a Democrat, $-1$ for a Republican, and 0 for
+            in the race (+1 for a Democrat, –1 for a Republican, and 0 for
             an open seat), and $PVI$ is the partisan voting index of the
             district. For the covariance matrix $\mathbf{\Sigma}$, we use
-            historical values for the variance (0.019) and covariance (0.0040)
-            for each district and pair of districts, and add in the variance 
-            from the national vote margin forecast.  This gives about at 20%
-            correlation between the errors in each district.
-            </p>
-            <p>
-            The winner of each race is simply $\mathrm{sgn}(\mu_r)$, and the
-            final seat margin in the U.S. House is 
-            $$ \sum_r \mathrm{sgn}(\mu_r). $$
-            </p>
-        </section>
+            historical values for the variance ($\sigma_h=0.019$) and
+            covariance ($\Sigma_h=0.0040$) for each district and pair of
+            districts, and add in the variance from the national vote margin
+            forecast, $MSE_{MRG}$.  This gives about at 20% correlation between
+            the errors in each district.  </p> <p> The winner of each race is
+            simply $\mathrm{sgn}(\mu_r)$, and the final seat margin in the U.S.
+        House is $$ \sum_r \mathrm{sgn}(\mu_r). $$ </p> </section>
 
     </main>
 
