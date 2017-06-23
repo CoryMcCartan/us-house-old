@@ -136,20 +136,19 @@
             A generic congressional ballot poll measures the number of
             respondents who say they would vote for each party's House
             candidate. The number of respondents choosing the Democrat is
-            $N_i^D$, which is drawn from a Binomial distribution,
-            $$ N_i^D \sim \mathrm{Binomial}(N_i, \pi_i) $$
-            where $\pi_i$ is the level of support for the Democrats in this poll. 
-            Why not use $\mu$? Pollsters sample
-            differently and have different methodologies, and so the margin of
-            support they measure is different from the true margin.
+            $N_i^D$, which is drawn from a Binomial distribution, $$ N_i^D \sim
+            \mathrm{Binomial}(N_i, \pi_i) $$ where $\pi_i$ is the level of
+            support for the Democrats in this poll.  Why not use $\mu$?
+            Pollsters sample differently and have different methodologies, and
+            so the margin of support they measure is different from the true
+            margin.
 
             Various factors contribute to the margin of support measured in a
             particular poll.  There is pollster-specific error and bias,
             sampling error, and statewide polling error (shared by all polling
-            firms). So we can decompose $\pi_i$ into  components,
-            $$
-            \mathrm{logit}(\pi_i) = \mu[t_i] + \alpha_p[p_i] + \alpha_n + \epsilon,
-            $$
+            firms). So we can decompose $\pi_i$ into  components, $$
+            \mathrm{logit}(\pi_i) = \mu[t_i] + \alpha_p[p_i] + \alpha_n +
+            \epsilon, $$
             where $\alpha_p$ is pollster-specific error, $\alpha_n$ is national
             polling error, amd $\epsilon$ is sampling error. Polling firms can
             be biased towards either party:
@@ -162,9 +161,8 @@
             deviation in bias of 5.63%):
             $$ \begin{align}
                 \alpha_n &\sim \mathrm{Normal}(2.70\%, \sigma_n) \\
-                \log(\sigma_n) &\sim \mathrm{Normal}(\log(5.63\%), 2)
+                \log(\sigma_n) &\sim \mathrm{Normal}(\log(5.63\%), 1)
             \end{align} $$
-            $$ \alpha_n \sim \mathrm{Normal}(2.7\%, \sigma_n31.6\%^2) $$
             Measurement noise is normally distributed around zero, with a
             standard error $\sigma_e$ having a uniform distribution between 0
             and 10%.
