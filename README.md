@@ -21,10 +21,10 @@ This is a statistical model for the biannual elections of the United States Hous
     npm i
     ```
 1. Run `./house.py`
-1. To view the analysis website, build it and serve the `docs/` folder:
+1. To view the analysis website, build it and serve the `output/` folder:
     ```
     cd site/
     npm run build
-    cd ../docs/
+    cd ../output/
     python3 -m http.server
     ```
