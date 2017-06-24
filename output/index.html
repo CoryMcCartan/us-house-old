@@ -160,10 +160,10 @@
             historical bias as our prior, which is larger the farther out we are 
             from the election. By election day, national polling is on average
             biased 2.70% toward the Democrats, with a standard deviation of 
-            5.63%. Bias is estimated on a monthly basis (where $bias_m$ is the 
-            historical bias in the national polling):
+            5.63%. Bias is estimated on a monthly basis (where $bias_h[m]$ is the 
+            historical bias in the national polling in month $m$):
             $$ \begin{align}
-                \alpha_n[m]  &\sim \mathrm{Normal}(bias_m, \sigma_n) \\
+                \alpha_n[m]  &\sim \mathrm{Normal}(bias_h[m], \sigma_n) \\
                 \log(\sigma_n) &\sim \mathrm{Normal}(\log(5.63\%), 1)
             \end{align} $$
             Measurement noise is normally distributed around zero, with a
@@ -204,7 +204,7 @@
             $\mu_r$:
             $$ \begin{align}
                 \mu_r &\sim \mathrm{Multivariate\ Normal}(\mathrm{logit}(
-                    b_0 + b_1\mu[T] + b_2INC_r + b_3PVI_r + b_4PVI_r\times PRES 
+                    b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PVI_r\times PRES 
                     + e_b), \mathbf{\Sigma}) \\
 
                 \mathbf{\Sigma} &= \begin{pmatrix}
@@ -224,7 +224,9 @@
             forecast, $MSE_{MRG}$.  This gives about at 20% correlation between
             the errors in each district.  </p> <p> The winner of each race is
             simply $\mathrm{sgn}(\mu_r)$, and the final seat margin in the U.S.
-        House is $$ \sum_r \mathrm{sgn}(\mu_r). $$ </p> </section>
+            House is $$ \sum_r \mathrm{sgn}(\mu_r). $$ 
+            </p> 
+        </section>
 
     </main>
 

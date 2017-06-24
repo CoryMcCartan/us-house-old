@@ -17631,6 +17631,16 @@ function races(data, states, root) {
     let probFmt = format(".0%");
     let marginFmt = x => `${(x>0 ? "D" : "R")}+${Math.abs(Math.round(100*x))}`;
 
+    let tableBlue = "#45e";
+    let tableRed = "#e32";
+    let logit = x => Math.log(x / (1 - x));
+    let demScale = linear$2()
+        .domain([-1000, -4, 4, 1000])
+        .range(["#fff", "#fff", tableBlue, tableBlue]);
+    let gopScale = linear$2()
+        .domain([-1000, -4, 4, 1000])
+        .range(["#fff", "#fff", tableRed, tableRed]);
+
     rows.selectAll("td")
         .data(d => [
             distStr(d.district),
@@ -17645,15 +17655,18 @@ function races(data, states, root) {
         .classed("d_pickup", (d, i) => i === 1 && d[0] > 0.5 && d[1] === -1)
         .classed("r_pickup", (d, i) => i === 2 && d[0] > 0.5 && d[1] === 1)
         .classed("margin", (d, i) => i == 3)
-        .style("color", (d, i) => [
-            "black",
+        .style("color", (d, i) => [,
             d[0] > 0.5 ? "white" : "black",
             d[0] > 0.5 ? "white" : "black",
             d > 0 ? BLUE : RED
         ][i])
+        .style("font-weight", (d, i) => [,
+            d[0] > 0.5 ? "bold" : "normal",
+            d[0] > 0.5 ? "bold" : "normal",,
+        ][i])
         .style("background-color", (d, i) => [,
-            d[0] > 0.5 ? BLUE : "",
-            d[0] > 0.5 ? RED : "",, 
+            demScale(logit(d[0])),
+            gopScale(logit(d[0])),
         ][i]);
 }
 
