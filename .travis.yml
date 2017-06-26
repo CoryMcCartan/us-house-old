@@ -1,6 +1,6 @@
 language: python
 python: "3.6"
-script: "./house.py --recompile"
+script: "./.travis.script"
 install: "pip install -r .travis.requirements.txt"
 deploy:
     provider: pages
