@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 ./house.py --recompile --nat_n 5000 --race_n 40000
-git config --global user.email "travis@travis-ci.org"
-git config --global user.name "Travis CI"
-git add .
-git commit -m 'CI run.'
-git push origin master
+#git config --global user.email "travis@travis-ci.org"
+#git config --global user.name "Travis CI"
+#git add .
+#git commit -m 'CI run.'
+#git remote add origin-travis https://${GITHUB_TOKEN}@github.com/CoryMcCartan/us-house.git > /dev/null
+#git push origin-travis master
