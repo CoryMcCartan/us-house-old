@@ -4,7 +4,7 @@ import cjs from 'rollup-plugin-commonjs';
 export default {
     entry: "js/main.js",
     format: "iife",
-    dest: "../output/compiled.js",
+    dest: "../docs/compiled.js",
     plugins: [ 
         cjs(),
         resolve(),

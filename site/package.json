@@ -6,17 +6,17 @@
   "scripts": {
     "test": "",
     "build:js:compile": "rollup -c",
-    "build:js:minify": "pushd ../output/ && uglifyjs compiled.js -o compiled.min.js -c -m --source-map content=compiled.js.map,url=compiled.min.js.map && popd",
+    "build:js:minify": "pushd ../docs/ && uglifyjs compiled.js -o compiled.min.js -c -m --source-map content=compiled.js.map,url=compiled.min.js.map && popd",
     "build:js": "npm run build:js:compile && npm run build:js:minify",
-    "build:css": "node-sass --output-style=compressed --source-map=true css/main.sass ../output/main.css",
-    "build": "cp index.html ../output/ && npm run build:js && npm run build:css",
+    "build:css": "node-sass --output-style=compressed --source-map=true css/main.sass ../docs/main.css",
+    "build": "cp index.html ../docs/ && npm run build:js && npm run build:css",
     "watch:js": "onchange 'js/*.js' -- npm run build:js",
     "watch:css": "onchange 'css/*.sass' -- npm run build:css",
-    "watch:html": "onchange 'index.html' -- cp index.html ../output/",
+    "watch:html": "onchange 'index.html' -- cp index.html ../docs/",
     "watch": "npm run watch:js & npm run watch:css & npm run watch:html & ",
-    "start": "cd ../output/ && python3 -m http.server",
+    "start": "cd ../docs/ && python3 -m http.server",
     "dev": "npm run watch & npm start",
-    "clean": "rm ../output/*.js && rm ../output/*.map &&  rm ../output/main.css"
+    "clean": "rm ../docs/*.js && rm ../docs/*.map &&  rm ../docs/main.css"
   },
   "repository": "https://github.com/CoryMcCartan/us-house",
   "author": "Cory McCartan",
