@@ -126,7 +126,7 @@ function overview(data, el) {
         .append("rect")
         .attr("width", 4)
         .attr("height", 6)
-        .attr("transform", "translate(0,0)")
+        .attr("transform", "translate(0 0)")
         .attr("fill", "white");
 
 
@@ -141,7 +141,7 @@ function overview(data, el) {
             .attr("height", h);
         el.height = null;
 
-        g.attr("transform", `translate(${w/2}, ${h})`);
+        g.attr("transform", `translate(${w/2} ${h})`);
 
         let iR = bigScreen() ? 100 : 40;
         let oR = dim - margin;
@@ -178,7 +178,8 @@ function overview(data, el) {
         seatsText
             .attr("x", x)
             .attr("y", y)
-            .style("font-size", bigScreen() ? 36 : 0.15*h);
+            .attr("font-size", bigScreen() ? 36 : 0.15*h);
+        console.log(seatsText.style("font-size"));
         gainText
             .attr("x", x)
             .attr("y", y + 22)
@@ -187,10 +188,10 @@ function overview(data, el) {
         [x, ] = getCoords(left, 0.5*oR + 0.5*iR);
         demProbText
             .attr("x", x)
-            .style("font-size", 0.3*(oR-iR));
+            .attr("font-size", 0.3*(oR-iR));
         gopProbText
             .attr("x", -x)
-            .style("font-size", 0.3*(oR-iR));
+            .attr("font-size", 0.3*(oR-iR));
     }
 
     draw();
@@ -216,7 +217,7 @@ function history(data, el) {
     h -= margin.T + margin.B;
 
     let g = svg.append("g")
-        .attr("transform", `translate(${margin.L},${margin.T})`);
+        .attr("transform", `translate(${margin.L} ${margin.T})`);
 
     let last = data.length - 1;
     let startDate = data[0].date;
@@ -290,7 +291,7 @@ function history(data, el) {
     let botOdds = box.append("text")
         .attr("y", half + textMargin)
         .attr("x", margin.R / 2)
-        .style("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
         .attr("class", "odds");
     let oddsDivider = box.append("line")
         .attr("x1", 10)
@@ -303,7 +304,7 @@ function history(data, el) {
     let topPct = box.append("text")
         .attr("y", 10)
         .attr("x", 10)
-        .style("alignment-baseline", "hanging")
+        .attr("dominant-baseline", "hanging")
         .attr("class", "tip-prob");
     let botPct = box.append("text")
         .attr("y", h - 10)
@@ -322,7 +323,7 @@ function history(data, el) {
         .attr("d", "M0,-5L10,0L0,5")
         .attr("class","arrowHead");
 
-    function draw(max = endDate) {
+    function draw(max = electionDay) {
         w = el.clientWidth; 
         h = 320;
         
@@ -355,7 +356,7 @@ function history(data, el) {
             });
 
         svg.select(".x.axis")
-            .attr("transform", `translate(0, ${y(0)})`)
+            .attr("transform", `translate(0 ${y(0)})`)
             .call(xAxis);
 
         svg.select(".y.axis")
@@ -373,8 +374,8 @@ function history(data, el) {
         resetTooltip();
     }
 
-    function resetTooltip(max = endDate) {
-        box.attr("transform", `translate(${w}, 0)`)
+    function resetTooltip(max = electionDay) {
+        box.attr("transform", `translate(${w} 0)`)
         shade.attr("width", margin.R);
         dateText.text(dateFormat(max));
         fillOdds(2**data[last].odds);
@@ -421,7 +422,7 @@ function history(data, el) {
         let idx = bisector(data, xval);
         let closest = data[Math.min(last, idx)];
 
-        box.attr("transform", `translate(${mx}, 0)`)
+        box.attr("transform", `translate(${mx} 0)`)
         shade.attr("width", w - mx + margin.R);
         dateText.text(dateFormat(xval));
         fillOdds(2 ** closest.odds);
@@ -452,7 +453,7 @@ function generic(data, el) {
     h -= margin.T + margin.B;
 
     let g = svg.append("g")
-        .attr("transform", `translate(${margin.L},${margin.T})`);
+        .attr("transform", `translate(${margin.L} ${margin.T})`);
 
     let last = data.length - 1;
     let startDate = data[0].date;
@@ -544,7 +545,7 @@ function generic(data, el) {
         .attr("dy", 5)
         .style("font-size", "12pt")
         .style("fill", "#777")
-        .style("alignment-baseline", "hanging");
+        .attr("dominant-baseline", "hanging");
     let marginFormat = d3.format("+.1%");
     let errorFormat = d3.format(".0%");
 
@@ -584,13 +585,13 @@ function generic(data, el) {
             .tickFormat(probFormat);
 
         svg.select(".x.axis")
-            .attr("transform", `translate(0, ${y(0)})`)
+            .attr("transform", `translate(0 ${y(0)})`)
             .call(xAxis);
 
         svg.select(".y.axis")
             .call(yAxis);
 
-        nowBox.attr("transform", `translate(${x(today)},0)`);
+        nowBox.attr("transform", `translate(${x(today)} 0)`);
         future.attr("width", w - x(today));
 
         let line = d3.line()
@@ -615,7 +616,7 @@ function generic(data, el) {
     }
 
     function resetTooltip() {
-        box.attr("transform", `translate(${w}, 0)`)
+        box.attr("transform", `translate(${w} 0)`)
         shade.attr("width", margin.R);
         dateText.text("Election Day");
         nowText.style("opacity", 1);
@@ -643,7 +644,7 @@ function generic(data, el) {
         let idx = bisector(data, xval);
         let closest = data[Math.min(last, idx)];
 
-        box.attr("transform", `translate(${mx}, 0)`)
+        box.attr("transform", `translate(${mx} 0)`)
         shade.attr("width", w - mx + margin.R);
         dateText.text(dateFormat(xval));
         nowText.style("opacity", 0);
