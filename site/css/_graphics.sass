@@ -118,6 +118,11 @@ text.prob
         flex-grow: 1
         margin: 0.5em
 
+div#strong_dem
+    order: -2
+div#lean_dem
+    order: -1
+
 table.races
     border-collapse: collapse
     width: 100%
@@ -157,8 +162,8 @@ table.races
     .table-container
         flex-basis: calc(33% - 2em) !important
 
-    div#strong_dem, div#strong_gop
-        order: 1
+    div#strong_dem
+        order: 0
 
 @media screen and (max-width: $break-bigboard-2)
     .table-container
@@ -166,7 +171,9 @@ table.races
 
     div#tossup
         flex-basis: 80% !important
-        order: -1
+
+    div#lean_dem
+        order: 0
 
     div#strong_dem, div#strong_gop
         display: none
@@ -179,3 +186,34 @@ table.races
 @media screen and (max-width: $break-small-table)
     .gain
         display: none
+
+
+@media print
+    .graphic
+        width: 95%
+        page-break-inside: avoid;
+
+    .tables
+        display: block
+        columns: 5
+        column-gap: 0.1em
+
+        h3
+            height: auto
+            margin: 1.5em 0 1em
+            column-span: all
+
+    tr 
+        font-size: 8pt
+
+    #outcomes tbody tr:nth-child(-n+10), #outcomes tbody tr:nth-last-child(-n+10)
+        display: none
+
+    td.maj > span
+        color: black !important
+
+    div#strong_dem
+        order: 0
+    div#lean_dem
+        order: 0
+

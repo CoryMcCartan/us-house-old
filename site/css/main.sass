@@ -93,6 +93,9 @@ footer
     a
         color: $grey
 
+footer.print
+    display: none
+
 
 h1, h2, h3, h4
     line-height: 1.15
@@ -133,3 +136,35 @@ svg:empty
 
     main
         width: calc(100vw - 1em)
+
+
+@media print
+    @page
+        size: portrait
+
+    *
+        -webkit-print-color-adjust: exact
+
+    header
+        position: absolute
+
+        .spacer, nav
+            display: none
+
+    .banner
+        background: white
+        text-align: center
+
+    section
+        orphans: 5
+
+    .content-block
+        page-break-inside: avoid
+
+    footer
+        background: white
+        color: $dark-grey
+        text-align: center
+
+        a
+            display: none
