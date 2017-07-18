@@ -179,7 +179,6 @@ function overview(data, el) {
             .attr("x", x)
             .attr("y", y)
             .attr("font-size", bigScreen() ? 36 : 0.15*h);
-        console.log(seatsText.style("font-size"));
         gainText
             .attr("x", x)
             .attr("y", y + 22)
@@ -219,6 +218,7 @@ function history(data, el) {
     let g = svg.append("g")
         .attr("transform", `translate(${margin.L} ${margin.T})`);
 
+    data.sort((a, b) => a.date - b.date);
     let last = data.length - 1;
     let startDate = data[0].date;
     let endDate = data[last].date;
@@ -323,7 +323,7 @@ function history(data, el) {
         .attr("d", "M0,-5L10,0L0,5")
         .attr("class","arrowHead");
 
-    function draw(max = electionDay) {
+    function draw() {
         w = el.clientWidth; 
         h = 320;
         
@@ -337,7 +337,7 @@ function history(data, el) {
         let nTicks = [2, 4, 6, 8, 10, 10];
         nTicks = nTicks[~~(w / 160)];
 
-        x.domain([startDate, max])
+        x.domain([startDate, electionDay])
             .rangeRound([0, w]);
         y.rangeRound([h, 0]);
 
@@ -374,10 +374,10 @@ function history(data, el) {
         resetTooltip();
     }
 
-    function resetTooltip(max = electionDay) {
+    function resetTooltip() {
         box.attr("transform", `translate(${w} 0)`)
         shade.attr("width", margin.R);
-        dateText.text(dateFormat(max));
+        dateText.text("Election Day");
         fillOdds(2**data[last].odds);
     }
 
@@ -678,7 +678,7 @@ function outcomes(data, el) {
     }
 
     let mean = Math.round(data.seats);
-    let sds = bigScreen() ? 1.25 : 1;
+    let sds = bigScreen() ? 1.05 : 0.85;
     let margin = Math.round(sds * data.seats_std);
     hist = hist.slice(mean - margin, mean + margin);
 
@@ -693,14 +693,14 @@ function outcomes(data, el) {
     let cells = rows.selectAll("td")
         .data((d, i) => {
             let s = mean - margin + i; 
-            return [s, 435-s, s-218, s-currentSeats, 1-d.cuml, [d.prob/maxProb, s], s];
+            return [s, 435-s, s-217.5, s-currentSeats, 1-d.cuml, [d.prob/maxProb, s], s];
         })
         .enter().append("td")
         .html((d, i) => [
             d,
             d,
             `<span style="color: ${d>0 ? BLUE : RED}">
-                + ${Math.abs(d)} ${d>0 ? "Dem" : "Rep"}.
+                + ${Math.ceil(Math.abs(d))} ${d>0 ? "Dem" : "Rep"}.
             </span>`,
             gainFormat(d),
             pctFormat(d),

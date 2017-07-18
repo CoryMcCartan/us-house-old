@@ -60,17 +60,17 @@ def get_race_prior(recalculate=False, filename="race_prior.pkl", model_dir="mode
 
     data = prepare_race_data()
 
-    race_prior = smf.ols("MRG ~ NAT + PVI + INC + PVI:PRES", data=data).fit()
+    race_prior = smf.ols("MRG ~ INC + PVI + ADJ + NAT + PRES*MID", data=data).fit()
 
     # Calculate covariance matrix of race prior model
     data["resid"] = race_prior.resid / 100
-    by_district = data.pivot(columns="DIST", values="resid")
+    by_district = data.pivot(columns="DIST", values="MRG")
     by_district.dropna(axis=1, inplace=True)
 
-    district_cov_matrix = np.cov(by_district.values.transpose())
+    cov_matrix = np.cov(by_district.values.transpose())
 
-    race_prior.dist_var = np.mean(district_cov_matrix.diagonal())
-    race_prior.dist_cov = np.mean(np.extract(1 - np.identity(200), district_cov_matrix))
+    race_prior.dist_var = cov_matrix.diagonal().mean()
+    race_prior.dist_cov = np.extract(1 - np.identity(cov_matrix.shape[0]), cov_matrix).mean()
 
     race_prior.save(path)
 
@@ -87,6 +87,7 @@ def prepare_race_data():
     incumbency_series = []
     margin_series = []
     pvi_series = []
+    pres_margin_series = []
     nat_series = []
     district_series = []
     president_series = []
@@ -109,8 +110,10 @@ def prepare_race_data():
         
         if year % 4 == 0: # presidential election year
             pvi_string = f"pvi_{year - 2}"
+            pres_string = f"pres_margin_{str(year - 4)[-2:]}"
         else:
             pvi_string = f"pvi_{year}"
+            pres_string = f"pres_margin_{str(year - 2)[-2:]}"
         
         for race, row in results.groupby("race"):
             dem = row[(row.party == "D") | (row.party == "DFL") | (row.party == "D*")
@@ -133,6 +136,7 @@ def prepare_race_data():
             margin_series.append(margin)
             incumbency_series.append(incumbent)
             pvi_series.append(cd_vote.loc[cd_vote.race == race, pvi_string].item())
+            pres_margin_series.append(cd_vote.loc[cd_vote.race == race, pres_string].item())
             district_series.append(race)
             president_series.append(president[year])
             midterm_series.append(0 if year % 4 == 0 else 1)
@@ -145,8 +149,8 @@ def prepare_race_data():
                         "PVI": pvi_series, "DIST": district_series,
                         "PRES": president_series, "MID": midterm_series,
                         "NAT": nat_series, "WIN": np.sign(margin_series),
-                         "YR": (np.array(years_series) - 2016)/2}, 
-                        index=years_series)
+                        "YR": (np.array(years_series) - 2016)/2, 
+                        "ADJ": pres_margin_series}, index=years_series)
     data_clean = data.dropna()
 
     return data_clean
@@ -160,12 +164,13 @@ def get_bias_prior(recalculate=False, filename="bias_prior.pkl", model_dir="mode
         return OLSResults.load(path)
 
     generic = pd.read_table("data/generic_polling.tsv")
-    bias_by_month = generic.groupby("months").error.mean()
+    bias_by_month = generic.groupby("months").error.mean().values
 
     avg_final_bias = (generic.error / 100).mean()
     final_bias_std = (generic.error / 100).std()
 
     bias_model = smf.ols("error ~ months", data=generic).fit()
+    bias_model.step_var = ((bias_by_month[1:] - bias_by_month[:-1])**2).mean() / 100**2
     bias_model.save(path)
 
     return bias_model

@@ -153,31 +153,42 @@
             polling error, and $\epsilon$ is sampling error. Polling firms can
             be biased towards either party:
             $$ \begin{align}
-                \alpha_p[p_i] &\sim \mathrm{Normal}(0, \sigma_p) \\
-                \sigma_p &\sim \mathrm{Uniform}(0, 10\%)
+                \alpha_p[p_i] &\sim \mathcal{N}(0, \sigma_p) \\
+                \sigma_p &\sim \mathrm{U}(0, 15\%)
             \end{align} $$
             National polling error can also go either way. We use the
             historical bias as our prior, which is larger the farther out we are 
             from the election. By election day, national polling is on average
             biased 2.70% toward the Democrats, with a standard deviation of 
-            5.63%. Bias is estimated on a monthly basis (where $bias_h[m]$ is the 
-            historical bias in the national polling in month $m$):
+            5.63%. Bias is estimated on a monthly basis:             
             $$ \begin{align}
-                \alpha_n[m]  &\sim \mathrm{Normal}(bias_h[m], \sigma_n) \\
-                \log(\sigma_n) &\sim \mathrm{Normal}(\log(5.63\%), 1)
+                \alpha_n[m]  &\sim \mathcal{N}(bias_h[m], \mathbf{\Sigma_n}) \\
+                \mathbf{\Sigma_n} &= \begin{pmatrix}
+                    \sigma_n & \Sigma_n & 0 & \dots & 0 \\
+                    \Sigma_n & \sigma_n & \Sigma_n & \dots & 0 \\
+                    0 & \Sigma_n & \sigma_n & \dots & 0 \\
+                    \vdots & \vdots & \vdots & \ddots & \vdots \\
+                    0 & 0 & 0 & \dots & \sigma_n
+                \end{pmatrix},
             \end{align} $$
+            where $bias_h[m]$ is the historical bias in the national polling in
+            month $m$, $\sigma_n$ is the variance in month-by-month bias across
+            elections, and $\Sigma_n$ is the covariance between bias in
+            adjancent months.
+
             Measurement noise is normally distributed around zero, with a
             standard error $\sigma_e$ having a uniform distribution between 0
-            and 10%.
+            and 15%.
 
             To smooth out changes in polling and to obtain polling estimates
             for weeks in which no results are released, we use a reverse random
             walk prior for $\mu$:
-            $$ \mu[t-1] \sim \mathrm{Normal}(\mu[t], \sigma). $$
-            We assume a uniform prior for $\sigma$ between 0 and 10%.  This
-            random walk is also carried forward towards election day, to forecast 
-            future changes in the national sentiment.
-            </p>
+            $$ \begin{align}
+                \mu[t-1] &\sim \mathcal{N}(\mu[t], \sigma) \\
+                \sigma &\sim \mathrm{Lognormal}(\log(4\%), 1)
+            \end{align} $$
+            This random walk is also carried forward towards election day, to
+            forecast future changes in the national sentiment.  </p>
 
             <h3>National Vote Margin Forecasting</h3>
             <p>
@@ -185,7 +196,7 @@
             margin. The mean and variance of the distribution come from a
             linear model:
             $$ \begin{align}
-                \mu[W] &\sim \mathrm{Normal}(MRG, \sqrt{MSE_{MRG}}) \\
+                \mu[W] &\sim \mathcal{N}(MRG, \sqrt{MSE_{MRG}}) \\
                 MRG &= a_0 + a_1APPR + a_2INC\times PRES + a_3PRES\times MID + e_a,
             \end{align} $$
             where $W$ is Election Day, $MRG$ is the expected national popular
@@ -203,9 +214,9 @@
             We use a linear model to forecast the margin each House race,
             $\mu_r$:
             $$ \begin{align}
-                \mu_r &\sim \mathrm{Multivariate\ Normal}(\mathrm{logit}(
-                    b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PVI_r\times PRES 
-                    + e_b), \mathbf{\Sigma}) \\
+                \mu_r &\sim \mathcal{N}(\mathrm{logit}(
+                    b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PRES\_MRG 
+                    + b_5PRES\times MID + e_b), \mathbf{\Sigma}) \\
 
                 \mathbf{\Sigma} &= \begin{pmatrix}
                     \sigma_h & \Sigma_h & \dots & \Sigma_h \\
@@ -216,23 +227,21 @@
             \end{align} $$
             where $INC_r$ is a categorical variable representing the incumbent
             in the race (+1 for a Democrat, –1 for a Republican, and 0 for
-            an open seat), and $PVI$ is the partisan voting index of the
-            district. For the covariance matrix $\mathbf{\Sigma}$, we use
-            historical values for the variance ($\sigma_h=0.019$) and
-            covariance ($\Sigma_h=0.0040$) for each district and pair of
-            districts, and add in the variance from the national vote margin
-            forecast, $MSE_{MRG}$.  This gives about at 20% correlation between
-            the errors in each district.  </p> <p> The winner of each race is
-            simply $\mathrm{sgn}(\mu_r)$, and the final seat margin in the U.S.
-            House is $$ \sum_r \mathrm{sgn}(\mu_r). $$ 
-            </p> 
-        </section>
+            an open seat), $PVI$ is the partisan voting index of the
+            district, and $PRES_MRG$ is the Democratic margin of victory in the
+            most recent presidential election. For the covariance matrix
+            $\mathbf{\Sigma}$, we use historical values for the variance
+            ($\sigma_h=0.019$) and covariance ($\Sigma_h=0.0040$) for each
+            district and pair of districts, and add in the variance from the
+            national vote margin forecast, $MSE_{MRG}$.  This gives about at
+            20% correlation between the errors in each district.  </p> <p> The
+            winner of each race is simply $\mathrm{sgn}(\mu_r)$, and the final
+            seat margin in the U.S.  House is $$ \sum_r \mathrm{sgn}(\mu_r). $$
+            </p> </section>
 
     </main>
 
-    <footer>
-        <div>
-            &copy; 2017. All rights reserved.<br>
+    <footer> <div> &copy; 2017. All rights reserved.<br>
             <a href="https://github.com/CoryMcCartan/us-house" target="_blank">View model code</a>.<br>
             Polling data from the Huffington Post&rsquo;s 
             <a href="http://elections.huffingtonpost.com/pollster/api/v2" target="_blank">API</a>.

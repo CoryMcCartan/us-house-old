@@ -14,14 +14,13 @@ import pickle
 import os
 import argparse
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 import time
-
+from urllib.request import urlopen as fetch
 import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
 warnings.filterwarnings("ignore", category=FutureWarning) 
 
-from urllib.request import urlopen as fetch
 from bs4 import BeautifulSoup
 import pollster
 pollster = pollster.Api()
@@ -37,7 +36,7 @@ import priors
 def main():
     args = get_args()
 
-    election_day = date(2018, 11, 6)
+    election_day = datetime(2018, 11, 6)
     current_seats = 194
 
     print("===========================================")
@@ -50,7 +49,7 @@ def main():
     #################################
     nat_prior = priors.get_national_prior(model_dir=args.model_dir)
     race_prior = priors.get_race_prior(model_dir=args.model_dir)
-    bias_prior = priors.get_bias_prior(model_dir=args.model_dir)
+    bias_prior = priors.get_bias_prior(recalculate=True, model_dir=args.model_dir)
 
 
     #################################
@@ -60,15 +59,29 @@ def main():
     approvals = priors.get_approvals_data()
     cd_vote = priors.get_pvi_data()
 
-    polls, n_weeks, n_months = get_polling_data()
+    polls, n_weeks, n_months = get_polling_data(max_date = args.date)
+
+    if args.date >= datetime(2018, 6, 1):
+        appr_slice = approvals[(approvals.date > date(2018, 1, 1))
+                                & (approvals.date < date(2018, 6, 1))]
+    else: # use last six months
+        ago = args.date - timedelta(6 * 365/12)
+        appr_slice = approvals[(approvals.date > ago) & (approvals.date < args.date)]
 
     nat_prior_data = [{
-        "APPR": approvals[approvals.date > date(2017, 1, 1)].approval.mean(),
+        "APPR": appr_slice.approval.mean(),
         "INC": -1,
         "PRES": -1,
         "MID": 1,
     }]
     nat_prediction = nat_prior.predict(nat_prior_data)[0]
+
+    # create covariance matrix for national polling error
+    sigma_cov = np.full((n_months, n_months), 0.0)
+    np.fill_diagonal(sigma_cov, bias_prior.mse_resid / 100**2)
+    diag = np.arange(0, n_months - 1)
+    sigma_cov[diag + 1, diag] = bias_prior.step_var
+    sigma_cov[diag, diag+1] = bias_prior.step_var
 
     mcmc_data = {
         "R": 435,
@@ -82,10 +95,9 @@ def main():
         "n_dem": polls.n_dem.values,
         "p": polls.pollster.values,
         "alpha_n_prior": bias_prior.predict({"months": range(n_months-1, -1, -1)}).values / 100,
-        "sigma_n_prior": math.sqrt(bias_prior.mse_model) / 100,
-        "reversion_n": 50,
+        "sigma_n_prior": sigma_cov,
         "mu_prior": nat_prediction / 100,
-        "mu_mse": math.sqrt(nat_prior.mse_model) / 100,
+        "mu_mse": math.sqrt(nat_prior.mse_resid) / 100,
     }
 
 
@@ -105,7 +117,8 @@ def main():
             pickle.dump(model, f)
 
 
-    fit = model.sampling(data=mcmc_data, chains=3, iter=args.nat_n)
+    fit = model.sampling(data=mcmc_data, chains=3, iter=args.nat_n, 
+            warmup=args.nat_n // 3)
 
 
     #################################
@@ -140,6 +153,7 @@ def main():
             "NAT": y[-1],
             "INC": 0 if race in not_running else incumbents.loc[race].incumbent,
             "PVI": cd_vote.loc[race].pvi_2018,
+            "ADJ": cd_vote.loc[race].pres_margin_16,
             "MID": 1,
             "PRES": -1,
         })
@@ -148,8 +162,8 @@ def main():
 
     # add in variance from national model
     addl_var = (err_y[-1] / 100)**2
-    cov_matrix = np.full((435, 435), race_prior.dist_cov + addl_var)
-    np.fill_diagonal(cov_matrix, race_prior.dist_var + addl_var)
+    cov_matrix = np.full((435, 435), race_prior.mse_resid/100**2 + addl_var)
+    np.fill_diagonal(cov_matrix, race_prior.dist_var/100**2 + addl_var)
 
     results = np.random.multivariate_normal(race_predictions, cov_matrix, args.race_n)
 
@@ -162,7 +176,7 @@ def main():
     gain = np.mean(seats) - current_seats
 
     print()
-    print(f"National Prediction: {'D' if nat_prediction >= 0 else 'R'}+{abs(nat_prediction):.1f}%")
+    print(f"National Prediction: {'D' if y[-1] >= 0 else 'R'}+{abs(y[-1]):.1f}%")
     print(f"Democrats have a {prob:.0%} chance of retaking the House.")
     print(f"They are expected to {'gain' if gain > 0 else 'lose'} {abs(gain):.0f} seats.")
     print()
@@ -172,7 +186,10 @@ def main():
     # Output predictions            #
     #################################
 
-    timestamp = int(time.time() * 1000)
+    if args.dry: 
+        exit(0)
+
+    timestamp = int(1000 * args.date.timestamp())
     
     district_data = pd.DataFrame({
             "margin": expected,
@@ -225,13 +242,16 @@ def main():
 
 
 
-def get_polling_data(year=2018):
+def get_polling_data(year=2018, max_date=None):
     nov_1 = date(year, 11, 1)
     election_day = nov_1 + timedelta(days=(1 - nov_1.weekday() + 7) % 7)
 
     polls = pollster.questions_slug_poll_responses_clean_tsv_get(f"{str(year)[-2:]}-US-House")
     polls = polls[polls.sample_subpopulation.isin(["Likely Voters", "Registered Voters"])]
     polls.rename(columns={"observations": "n_resp"}, inplace=True)
+
+    if max_date is not None:
+        polls = polls[polls.end_date <= max_date]
 
     polls["n_dem"] = polls.Democrat / (polls.Democrat + polls.Republican) * polls.n_resp
     polls.dropna(subset=["n_dem"], inplace=True)
@@ -303,9 +323,13 @@ def name_to_abbr(name):
 def get_args():
     parser = argparse.ArgumentParser(description="Forecast 2018 U.S. House races.",
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("--dry", action="store_true",
+            help="Dry run, no results saved.")
+    parser.add_argument("--date", type=date_type, default=datetime.now(),
+            help="Date to model. Polls after this date are discarded.")
     parser.add_argument("--race_n", type=int, nargs="?", default=20_000,
             help="MCMC iterations for individual races.")
-    parser.add_argument("--nat_n", type=int, nargs="?", default=2000,
+    parser.add_argument("--nat_n", type=int, nargs="?", default=3000,
             help="MCMC iterations for national poll aggregation.")
     parser.add_argument("--recompile", action="store_true",
             help="Force recompile of STAN model.")
@@ -317,6 +341,15 @@ def get_args():
             help="File in which to store model history.")
 
     return parser.parse_args()
+
+# Date format checker for argparse
+def date_type(arg_date_str):
+    try:
+        return datetime.strptime(arg_date_str, "%Y-%m-%d")
+    except ValueError:
+        msg = ("Dates must be given as YYYY-MM-DD.  The provided date, " 
+            f"\"{arg_date_str}\", was not valid.")
+        raise argparse.ArgumentTypeError(msg)
 
 
 
