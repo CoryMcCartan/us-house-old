@@ -57,6 +57,13 @@
 
         <section>
             <h2>Likely outcomes</h2>
+            Democrats are only favored to flip a few seats. In fact, the most
+            likely outcome is a gain or loss of just a couple seats. But the 
+            Democrats are competitive in many more districts than the GOP, and 
+            they have much more room to grow, since the GOP holds more seats 
+            than at any time since the 1920s.  This gives them many more 
+            opportunities for upsets, and increases their overall chances of 
+            retaking control of the House.
             <table id="outcomes">
                 <thead>
                 <tr>
@@ -78,11 +85,18 @@
         <section>
             <a class="anchor" id="races"></a>
             <h2>Races where &hellip;</h2>
-            <div class="tables">
-                <div class="table-container" id="strong_dem">
-                    <h3>Democrats expected to win easily</h3>
-                    <table class="races" id="strong_dem"></table>
-                </div>
+            Democrats have many more safe seats than
+            Republicans&mdash;districts where there&rsquo;s virtually no chance 
+            that the other party will win.  This is partly the result of
+            gerrymandering, and partly a consequence of Democrats&rsquo; natural
+            tendency to cluster together in cities. Notice that there are very
+            few seats that are expected to flip to the Democrats. But since the
+            GOP has many more seats in which they are vulnerable, the Democrats
+            are still expected to pick up quite a few seats.
+
+            <div class="tables"> <div class="table-container" id="strong_dem">
+                    <h3>Democrats expected to win easily</h3> <table
+                        class="races" id="strong_dem"></table> </div>
                 <div class="table-container" id="lean_dem">
                     <h3>Democrats expected to win narrowly</h3>
                     <table class="races" id="lean_dem"></table>
@@ -128,13 +142,13 @@
             For each poll $i$:
             <ul>
                 <li>The sample size is denoted $N_i$.</li>
-                <li>The time at which the poll was conducted is denoted $w_i$.
-                    Time is discretized on a weekly basis.</li>
+                <li>The week in which the poll was conducted is denoted $w_i$.</li>
+                <li>The month in which the poll was conducted is denoted $m_i$.</li>
                 <li>The polling firm conducting the poll is denoted $p_i$.</li>
             </ul>
 
             A generic congressional ballot poll measures the number of
-            respondents who say they would vote for each party's House
+            respondents who say they would vote for each party&rsqo;s House
             candidate. The number of respondents choosing the Democrat is
             $N_i^D$, which is drawn from a Binomial distribution, $$ N_i^D \sim
             \mathrm{Binomial}(N_i, \pi_i) $$ where $\pi_i$ is the level of
@@ -147,7 +161,7 @@
             particular poll.  There is pollster-specific error and bias,
             sampling error, and statewide polling error (shared by all polling
             firms). So we can decompose $\pi_i$ into  components, $$
-            \mathrm{logit}(\pi_i) = \mu[w_i] + \alpha_p[p_i] + \alpha_n +
+            \mathrm{logit}(\pi_i) = \mu[w_i] + \alpha_p[p_i] + \alpha_n[m_i] +
             \epsilon, $$
             where $\alpha_p$ is pollster-specific error, $\alpha_n$ is national
             polling error, and $\epsilon$ is sampling error. Polling firms can
@@ -158,9 +172,9 @@
             \end{align} $$
             National polling error can also go either way. We use the
             historical bias as our prior, which is larger the farther out we are 
-            from the election. By election day, national polling is on average
-            biased 2.70% toward the Democrats, with a standard deviation of 
-            5.63%. Bias is estimated on a monthly basis:             
+            from the election. Two years out, national polling is on average
+            biased 5.5% toward the Democrats. By Election Day, this shrinks to 
+            1.3%. Bias is estimated on a monthly basis:             
             $$ \begin{align}
                 \alpha_n[m]  &\sim \mathcal{N}(bias_h[m], \mathbf{\Sigma_n}) \\
                 \mathbf{\Sigma_n} &= \begin{pmatrix}
@@ -174,7 +188,7 @@
             where $bias_h[m]$ is the historical bias in the national polling in
             month $m$, $\sigma_n$ is the variance in month-by-month bias across
             elections, and $\Sigma_n$ is the covariance between bias in
-            adjancent months.
+            adjacent months.
 
             Measurement noise is normally distributed around zero, with a
             standard error $\sigma_e$ having a uniform distribution between 0
@@ -184,7 +198,7 @@
             for weeks in which no results are released, we use a reverse random
             walk prior for $\mu$:
             $$ \begin{align}
-                \mu[t-1] &\sim \mathcal{N}(\mu[t], \sigma) \\
+                \mu[w-1] &\sim \mathcal{N}(\mu[w], \sigma) \\
                 \sigma &\sim \mathrm{Lognormal}(\log(4\%), 1)
             \end{align} $$
             This random walk is also carried forward towards election day, to
@@ -200,19 +214,16 @@
                 MRG &= a_0 + a_1APPR + a_2INC\times PRES + a_3PRES\times MID + e_a,
             \end{align} $$
             where $W$ is Election Day, $MRG$ is the expected national popular
-            vote margin, $INC$ a categorical variable
-            representing the incumbent majority party (+1 for the Democrats,
-            –1 for the Republicans), $PRES$ is the sitting president's party
-            (+1 for a Democrat, –1 for a Republican), $APPR$ is the average of
-            sitting president's approval rating from January to June before the
+            vote margin, $INC$ a categorical variable representing the
+            incumbent majority party (+1 for the Democrats, –1 for the
+            Republicans), $PRES$ is the sitting president&rsquo;s party (+1 for
+            a Democrat, –1 for a Republican), $APPR$ is the average of sitting
+            president&rsquo;s approval rating from January to June before the
             election, and $MID$ represents whether the election is a midterm (1
-            if it is, 0 if not). 
-            </p>
+            if it is, 0 if not).  </p>
 
-            <h3>House Race Forecasting</h3>
-            <p>
-            We use a linear model to forecast the margin each House race,
-            $\mu_r$:
+            <h3>House Race Forecasting</h3> <p> We use a linear model to
+            forecast the margin each House race, $\mu_r$:
             $$ \begin{align}
                 \mu_r &\sim \mathcal{N}(\mathrm{logit}(
                     b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PRES\_MRG 
@@ -228,7 +239,7 @@
             where $INC_r$ is a categorical variable representing the incumbent
             in the race (+1 for a Democrat, –1 for a Republican, and 0 for
             an open seat), $PVI$ is the partisan voting index of the
-            district, and $PRES_MRG$ is the Democratic margin of victory in the
+            district, and $PRES\_MRG$ is the Democratic margin of victory in the
             most recent presidential election. For the covariance matrix
             $\mathbf{\Sigma}$, we use historical values for the variance
             ($\sigma_h=0.019$) and covariance ($\Sigma_h=0.0040$) for each
