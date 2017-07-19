@@ -50,19 +50,19 @@
             <span class="updated"></span>
         </section>
 
-        <section>
+        <section class="content-block">
             <h2>How the odds have changed</h2>
             <div height="320" id="history" class="graphic"></div>
         </section>
 
-        <section>
+        <section class="content-block">
             <h2>Likely outcomes</h2>
             Democrats are only favored to flip a few seats. In fact, the most
-            likely outcome is a gain or loss of just a couple seats. But the 
-            Democrats are competitive in many more districts than the GOP, and 
-            they have much more room to grow, since the GOP holds more seats 
-            than at any time since the 1920s.  This gives them many more 
-            opportunities for upsets, and increases their overall chances of 
+            likely outcome is a gain or loss of just a couple seats.  But the
+            Democrats are competitive in many more districts than the GOP, and
+            they have much more room to grow, since the GOP holds more seats
+            than at any time since the 1920s.  This gives them many more
+            opportunities for upsets, and increases their overall chances of
             retaking control of the House.
             <table id="outcomes">
                 <thead>
@@ -83,31 +83,36 @@
         </section>
 
         <section>
-            <a class="anchor" id="races"></a>
-            <h2>Races where &hellip;</h2>
-            Democrats have many more safe seats than
-            Republicans&mdash;districts where there&rsquo;s virtually no chance 
-            that the other party will win.  This is partly the result of
-            gerrymandering, and partly a consequence of Democrats&rsquo; natural
-            tendency to cluster together in cities. Notice that there are very
-            few seats that are expected to flip to the Democrats. But since the
-            GOP has many more seats in which they are vulnerable, the Democrats
-            are still expected to pick up quite a few seats.
+            <div class="content-block">
+                <a class="anchor" id="races"></a>
+                <h2>Races where &hellip;</h2>
+                Democrats have many more safe seats than
+                Republicans&mdash;districts where there&rsquo;s virtually no
+                chance that the other party will win.  This is partly the
+                result of gerrymandering, and partly a consequence of
+                Democrats&rsquo; natural tendency to cluster together in
+                cities. Notice that there are very few seats that are expected
+                to flip to the Democrats. But since the GOP has many more seats
+                in which they are vulnerable, the Democrats
+                are still expected to pick up quite a few seats.
+            </div>
 
-            <div class="tables"> <div class="table-container" id="strong_dem">
-                    <h3>Democrats expected to win easily</h3> <table
-                        class="races" id="strong_dem"></table> </div>
-                <div class="table-container" id="lean_dem">
-                    <h3>Democrats expected to win narrowly</h3>
-                    <table class="races" id="lean_dem"></table>
-                </div>
+            <div class="tables"> 
                 <div class="table-container" id="tossup">
                     <h3>Tossup seats</h3>
                     <table class="races" id="tossup"></table>
                 </div>
+                <div class="table-container" id="lean_dem">
+                    <h3>Democrats expected to win narrowly</h3>
+                    <table class="races" id="lean_dem"></table>
+                </div>
                 <div class="table-container" id="lean_gop">
                     <h3>Republicans expected to win narrowly</h3>
                     <table class="races" id="lean_gop"></table>
+                </div>
+                <div class="table-container" id="strong_dem">
+                    <h3>Democrats expected to win easily</h3> 
+                    <table class="races" id="strong_dem"></table> 
                 </div>
                 <div class="table-container" id="strong_gop">
                     <h3>Republicans expected to win easily</h3>
@@ -116,7 +121,7 @@
             </div>
         </section>
 
-        <section>
+        <section class="content-block">
             <a class="anchor" id="polling"></a>
             <h2>National Polling</h2>
             <div height="320" id="generic" class="graphic"></div>
@@ -202,7 +207,8 @@
                 \sigma &\sim \mathrm{Lognormal}(\log(4\%), 1)
             \end{align} $$
             This random walk is also carried forward towards election day, to
-            forecast future changes in the national sentiment.  </p>
+            forecast future changes in the national sentiment.
+            </p>
 
             <h3>National Vote Margin Forecasting</h3>
             <p>
@@ -220,9 +226,11 @@
             a Democrat, –1 for a Republican), $APPR$ is the average of sitting
             president&rsquo;s approval rating from January to June before the
             election, and $MID$ represents whether the election is a midterm (1
-            if it is, 0 if not).  </p>
+            if it is, 0 if not).  
+            </p>
 
-            <h3>House Race Forecasting</h3> <p> We use a linear model to
+            <h3>House Race Forecasting</h3> 
+            <p> We use a linear model to
             forecast the margin each House race, $\mu_r$:
             $$ \begin{align}
                 \mu_r &\sim \mathcal{N}(\mathrm{logit}(
@@ -248,16 +256,20 @@
             20% correlation between the errors in each district.  </p> <p> The
             winner of each race is simply $\mathrm{sgn}(\mu_r)$, and the final
             seat margin in the U.S.  House is $$ \sum_r \mathrm{sgn}(\mu_r). $$
-            </p> </section>
+            </p>
+        </section>
 
     </main>
 
-    <footer> <div> &copy; 2017. All rights reserved.<br>
-            <a href="https://github.com/CoryMcCartan/us-house" target="_blank">View model code</a>.<br>
-            Polling data from the Huffington Post&rsquo;s 
+    <footer> 
+        <div> 
+            &copy; 2017. All rights reserved.<br>
+            <a href="https://github.com/CoryMcCartan/us-house" target="_blank">View model code.</a><br>
+            Polling data from the Huffington Post
             <a href="http://elections.huffingtonpost.com/pollster/api/v2" target="_blank">API</a>.
         </div>
     </footer>
+
     <script src="compiled.min.js"></script>
 </body>
 </html>
