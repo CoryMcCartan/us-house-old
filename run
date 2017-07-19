@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-./house.py --nat_n 5000 --race_n 40000
+./house.py --nat_n 4500 --race_n 30000
 git add .
 git commit -am 'Run.'
 git push
