@@ -656,7 +656,7 @@ function generic(data, el) {
             .style("fill", mrg > 0 ? BLUE : RED)
             .attr("y", y(mrg));
         errorText
-            .text("±" + errorFormat(2*closest.std))
+            .text("±" + errorFormat(MOE*closest.std))
             .attr("y", y(mrg));
     });
     svg.on("mouseout", resetTooltip);
