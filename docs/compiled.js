@@ -16877,6 +16877,7 @@ const LIGHT_RED = "#f99";
 
 const currentSeats = 194;
 const electionDay = new Date("11/6/2018");
+const MOE = 1.64;
 
 let bigScreen = () => window.innerWidth > 600;
 
@@ -16895,7 +16896,7 @@ function overview(data, el) {
     let currentAngle = currentSeats / 435 * Math.PI;
     let demAngle = data.seats / 435 * Math.PI;
     let gopAngle = Math.PI - demAngle;
-    let errAngle = 2 * data.seats_std / 435 * Math.PI;
+    let errAngle = MOE * data.seats_std / 435 * Math.PI;
 
     let left = -Math.PI / 2;
     let right = Math.PI / 2;
@@ -17306,8 +17307,8 @@ function generic(data, el) {
     data = data.generic.map(d => ({ 
         date: new Date(d.weeks),
         margin: d.margin / 100,
-        top: (d.margin + 2*d.std) / 100,
-        bot: (d.margin - 2*d.std) / 100,
+        top: (d.margin + MOE*d.std) / 100,
+        bot: (d.margin - MOE*d.std) / 100,
         std: d.std / 100,
     }));
     window.generic = data;
