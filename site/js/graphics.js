@@ -628,7 +628,7 @@ function generic(data, el) {
             .style("fill", mrg > 0 ? BLUE : RED)
             .attr("y", y(mrg));
         errorText
-            .text("±" + errorFormat(2*data[last].std))
+            .text("±" + errorFormat(MOE*data[last].std))
             .attr("y", y(mrg));
     }
 
