@@ -232,16 +232,15 @@
             <p> We use a linear model to
             forecast the margin each House race, $\mu_r$:
             $$ \begin{align}
-                \mu_r &\sim \mathcal{N}(\mathrm{logit}(
-                    b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PRES\_MRG 
-                    + b_5PRES\times MID + e_b), \mathbf{\Sigma}) \\
+                \mu_r &= b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PRES\_MRG 
+                    + b_5PRES\times MID + e_b \\
 
-                \mathbf{\Sigma} &= \begin{pmatrix}
+                    e_b &\sim \mathcal{N}\left(0, \begin{pmatrix}
                     \sigma_h & \Sigma_h & \dots & \Sigma_h \\
                     \Sigma_h & \sigma_h & \dots & \Sigma_h \\
                     \vdots & \vdots & \ddots & \vdots \\
                     \Sigma_h & \Sigma_h & \dots & \sigma_h
-                \end{pmatrix} + MSE_{MRG}
+                \end{pmatrix} + MSE_{MRG} \right)
             \end{align} $$
             where $INC_r$ is a categorical variable representing the incumbent
             in the race (+1 for a Democrat, –1 for a Republican, and 0 for
