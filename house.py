@@ -117,8 +117,8 @@ def main():
             pickle.dump(model, f)
 
 
-    fit = model.sampling(data=mcmc_data, chains=3, iter=args.nat_n, 
-            warmup=args.nat_n // 3)
+    fit = model.sampling(data=mcmc_data, chains=1, iter=args.nat_n, 
+            warmup=args.nat_n // 8)
 
 
     #################################
