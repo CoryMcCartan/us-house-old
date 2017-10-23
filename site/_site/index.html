@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="assets/flag.gif" rel="icon">
+
+    <title>2018 House Predictions</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Overpass:300,700" rel="stylesheet">
+    <link href="main.css" rel="stylesheet">
+
+    <script type="text/x-mathjax-config">
+        MathJax.Hub.Config({
+            messageStyle: "none",
+            CommonHTML: { linebreaks: { automatic: true } },
+            tex2jax: {inlineMath: [['$','$']]}
+        });
+    </script>
+    <script type="text/javascript" async 
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
+    </script>
+</head>
+<body>
+    <header>
+        <img class="icon" src="assets/flag.gif">
+        <h1><a href="#summary">2018 U.S. House Predictions</a></h1>
+        <span class="spacer"></span>
+        <nav>
+            <ul>
+                <li><a href="#summary">Summary</a></li>
+                <li><a href="#races">Races</a></li>
+                <li><a href="#polling">Polling</a></li>
+                <li><a href="#model">Model</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <a class="anchor" id="summary"></a>
+            <div id="overview" class="graphic">
+                <img class="dummy" src="assets/dummy-wheel.svg">
+            </div>
+        </section>
+
+        <section class="banner">
+            <span class="text"></span>
+            <span class="updated"></span>
+        </section>
+
+        <section class="content-block">
+            <h2>How the odds have changed</h2>
+            <div height="320" id="history" class="graphic"></div>
+        </section>
+
+        <section class="content-block">
+            <h2>Likely outcomes</h2>
+            Democrats are only favored to flip a few seats. In fact, the most
+            likely outcome is a gain or loss of just a couple seats.  But the
+            Democrats are competitive in many more districts than the GOP, and
+            they have much more room to grow, since the GOP holds more seats
+            than at any time since the 1920s.  This gives them many more
+            opportunities for upsets, and increases their overall chances of
+            retaking control of the House.
+            <table id="outcomes">
+                <thead>
+                <tr>
+                    <th>Dem.<br>Seats</th>
+                    <th>Rep.<br>Seats</th>
+                    <th class="maj">Majority</th>
+                    <th class="gain">Dem.<br>Gain</th>
+                    <th>Cuml.<br>Likelihood*</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+            </table>
+            <small style="text-align: center; display: block; color: #777">
+                *The chances that the Democrats will earn at least this many seats.
+            </small>
+        </section>
+
+        <section>
+            <div class="content-block">
+                <a class="anchor" id="races"></a>
+                <h2>Races where &hellip;</h2>
+                Democrats have many more safe seats than
+                Republicans&mdash;districts where there&rsquo;s virtually no
+                chance that the other party will win.  This is partly the
+                result of gerrymandering, and partly a consequence of
+                Democrats&rsquo; natural tendency to cluster together in
+                cities. Notice that there are very few seats that are expected
+                to flip to the Democrats. But since the GOP has many more seats
+                in which they are vulnerable, the Democrats
+                are still expected to pick up quite a few seats.
+            </div>
+
+            <div class="tables"> 
+                <div class="table-container" id="tossup">
+                    <h3>Tossup seats</h3>
+                    <table class="races" id="tossup"></table>
+                </div>
+                <div class="table-container" id="lean_dem">
+                    <h3>Democrats expected to win narrowly</h3>
+                    <table class="races" id="lean_dem"></table>
+                </div>
+                <div class="table-container" id="lean_gop">
+                    <h3>Republicans expected to win narrowly</h3>
+                    <table class="races" id="lean_gop"></table>
+                </div>
+                <div class="table-container" id="strong_dem">
+                    <h3>Democrats expected to win easily</h3> 
+                    <table class="races" id="strong_dem"></table> 
+                </div>
+                <div class="table-container" id="strong_gop">
+                    <h3>Republicans expected to win easily</h3>
+                    <table class="races" id="strong_gop"></table>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-block">
+            <a class="anchor" id="polling"></a>
+            <h2>National Polling</h2>
+            <div height="320" id="generic" class="graphic"></div>
+        </section>
+
+        <section>
+            <a class="anchor" id="model"></a>
+            <h2>Model</h2>
+            <p>
+            Our goal is to estimate the difference in vote share for the
+            Democratic and Republican candidates in each of the four hundred
+            thirty five congressional races. We cannot observe this directly;
+            we must infer it from a combination of structural factors such as
+            economic conditions and incumbency, and polling data, usually from
+            a "generic congressional ballot."
+            </p>
+
+            <h3>Poll Aggregation</h3>
+            <p>
+            We first look backwards, aggregating generic congressional ballot
+            polls.
+
+            For each poll $i$:
+            <ul>
+                <li>The sample size is denoted $N_i$.</li>
+                <li>The week in which the poll was conducted is denoted $w_i$.</li>
+                <li>The month in which the poll was conducted is denoted $m_i$.</li>
+                <li>The polling firm conducting the poll is denoted $p_i$.</li>
+            </ul>
+
+            A generic congressional ballot poll measures the number of
+            respondents who say they would vote for each party&rsqo;s House
+            candidate. The number of respondents choosing the Democrat is
+            $N_i^D$, which is drawn from a Binomial distribution, $$ N_i^D \sim
+            \mathrm{Binomial}(N_i, \pi_i) $$ where $\pi_i$ is the level of
+            support for the Democrats in this poll.  Why not use $\mu$?
+            Pollsters sample differently and have different methodologies, and
+            so the margin of support they measure is different from the true
+            margin.
+
+            Various factors contribute to the margin of support measured in a
+            particular poll.  There is pollster-specific error and bias,
+            sampling error, and statewide polling error (shared by all polling
+            firms). So we can decompose $\pi_i$ into  components, $$
+            \mathrm{logit}(\pi_i) = \mu[w_i] + \alpha_p[p_i] + \alpha_n[m_i] +
+            \epsilon, $$
+            where $\alpha_p$ is pollster-specific error, $\alpha_n$ is national
+            polling error, and $\epsilon$ is sampling error. Polling firms can
+            be biased towards either party:
+            $$ \begin{align}
+                \alpha_p[p_i] &\sim \mathcal{N}(0, \sigma_p) \\
+                \sigma_p &\sim \mathrm{U}(0, 15\%)
+            \end{align} $$
+            National polling error can also go either way. We use the
+            historical bias as our prior, which is larger the farther out we are 
+            from the election. Two years out, national polling is on average
+            biased 5.5% toward the Democrats. By Election Day, this shrinks to 
+            1.3%. Bias is estimated on a monthly basis:             
+            $$ \begin{align}
+                \alpha_n[m]  &\sim \mathcal{N}(bias_h[m], \mathbf{\Sigma_n}) \\
+                \mathbf{\Sigma_n} &= \begin{pmatrix}
+                    \sigma_n & \Sigma_n & 0 & \dots & 0 \\
+                    \Sigma_n & \sigma_n & \Sigma_n & \dots & 0 \\
+                    0 & \Sigma_n & \sigma_n & \dots & 0 \\
+                    \vdots & \vdots & \vdots & \ddots & \vdots \\
+                    0 & 0 & 0 & \dots & \sigma_n
+                \end{pmatrix},
+            \end{align} $$
+            where $bias_h[m]$ is the historical bias in the national polling in
+            month $m$, $\sigma_n$ is the variance in month-by-month bias across
+            elections, and $\Sigma_n$ is the covariance between bias in
+            adjacent months.
+
+            Measurement noise is normally distributed around zero, with a
+            standard error $\sigma_e$ having a uniform distribution between 0
+            and 15%.
+
+            To smooth out changes in polling and to obtain polling estimates
+            for weeks in which no results are released, we use a reverse random
+            walk prior for $\mu$:
+            $$ \begin{align}
+                \mu[w-1] &\sim \mathcal{N}(\mu[w], \sigma) \\
+                \sigma &\sim \mathrm{Lognormal}(\log(4\%), 1)
+            \end{align} $$
+            This random walk is also carried forward towards election day, to
+            forecast future changes in the national sentiment.
+            </p>
+
+            <h3>National Vote Margin Forecasting</h3>
+            <p>
+            We use a normal distribution as our prior for the final vote
+            margin. The mean and variance of the distribution come from a
+            linear model:
+            $$ \begin{align}
+                \mu[W] &= a_0 + a_1APPR + a_2INC\times PRES + a_3PRES\times MID + e_a,
+            \end{align} $$
+            where $W$ is Election Day, $MRG$ is the expected national popular
+            vote margin, $INC$ a categorical variable representing the
+            incumbent majority party (+1 for the Democrats, –1 for the
+            Republicans), $PRES$ is the sitting president&rsquo;s party (+1 for
+            a Democrat, –1 for a Republican), $APPR$ is the average of sitting
+            president&rsquo;s approval rating from January to June before the
+            election, and $MID$ represents whether the election is a midterm (1
+            if it is, 0 if not).  
+            </p>
+
+            <h3>House Race Forecasting</h3> 
+            <p> We use a linear model to
+            forecast the margin each House race, $\mu_r$:
+            $$ \begin{align}
+                \mu_r &= b_0 + b_1\mu[W] + b_2INC_r + b_3PVI_r + b_4PRES\_MRG 
+                    + b_5PRES\times MID + e_b \\
+
+                    e_b &\sim \mathcal{N}\left(0, \begin{pmatrix}
+                    \sigma_h & \Sigma_h & \dots & \Sigma_h \\
+                    \Sigma_h & \sigma_h & \dots & \Sigma_h \\
+                    \vdots & \vdots & \ddots & \vdots \\
+                    \Sigma_h & \Sigma_h & \dots & \sigma_h
+                \end{pmatrix} + MSE_{MRG} \right)
+            \end{align} $$
+            where $INC_r$ is a categorical variable representing the incumbent
+            in the race (+1 for a Democrat, –1 for a Republican, and 0 for
+            an open seat), $PVI$ is the partisan voting index of the
+            district, and $PRES\_MRG$ is the Democratic margin of victory in the
+            most recent presidential election. For the covariance matrix
+            $\mathbf{\Sigma}$, we use historical values for the variance
+            ($\sigma_h=0.019$) and covariance ($\Sigma_h=0.0040$) for each
+            district and pair of districts, and add in the variance from the
+            national vote margin forecast, $MSE_{MRG}$.  This gives about at
+            20% correlation between the errors in each district.  </p> <p> The
+            winner of each race is simply $\mathrm{sgn}(\mu_r)$, and the final
+            seat margin in the U.S.  House is $$ \sum_r \mathrm{sgn}(\mu_r). $$
+            </p>
+        </section>
+
+    </main>
+
+    <footer> 
+        <div> 
+            &copy; 2017. All rights reserved.<br>
+            <a href="https://github.com/CoryMcCartan/us-house" target="_blank">View model code.</a><br>
+            Polling data from the Huffington Post
+            <a href="http://elections.huffingtonpost.com/pollster/api/v2" target="_blank">API</a>.
+        </div>
+    </footer>
+
+    <script src="compiled.min.js"></script>
+</body>
+</html>

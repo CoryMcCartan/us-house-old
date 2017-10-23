@@ -173,7 +173,7 @@ def main():
     seats = np.sum((np.sign(results) + 1) / 2, axis=1).astype(int)
     seats_hist = np.bincount(seats, minlength=436) / len(seats)
     prob = np.mean(seats >= 218)
-    gain = np.mean(seats) - current_seats
+    gain = np.median(seats) - current_seats
 
     print()
     print(f"National Prediction: {'D' if y[-1] >= 0 else 'R'}+{abs(y[-1]):.1f}%")
@@ -207,8 +207,9 @@ def main():
             "time": timestamp,
             "prob": prob,
             "gain": gain,
-            "seats": seats.mean(),
-            "seats_std": seats.std(),
+            "seats": np.median(seats),
+            "seats_min": np.percentile(seats, 10),
+            "seats_max": np.percentile(seats, 90),
             "seats_dist": seats_hist.tolist(),
             "districts": district_data.to_dict("records"),
             "generic": nat_data.to_dict("records"),

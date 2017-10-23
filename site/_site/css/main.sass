@@ -1,0 +1,170 @@
+@import vars
+@import graphics
+
+*
+    box-sizing: border-box
+    font-family: "Overpass", sans-serif
+
+body
+    margin: 0
+    background-color: #fff
+    font-weight: 300
+    overflow-x: hidden
+
+header
+    display: flex
+    position: fixed
+    width: 100vw
+    height: $h-height
+    top: 0
+    z-index: 10
+    background: #fff
+    align-items: center
+    justify-content: center
+    padding: 0.5em
+    border-bottom: 1px solid $grey
+
+    .icon
+        height: 1.3em
+
+    h1
+        margin: 0 0 0 0.5em
+        font-size: 1.5rem
+
+        a
+            color: black
+            text-decoration: none
+
+    ul
+        margin: 0
+        padding: 0
+
+    li
+        display: inline-block
+        padding-right: 0.25em
+
+        a
+            color: $grey
+            text-transform: uppercase
+            text-decoration: none
+            transition: all 200ms
+
+        a:hover
+            text-decoration: underline
+            color: $med-grey
+
+    li:not(:first-child)
+        padding-left: 0.5em
+        border-left: 1px solid $grey
+
+main
+    margin: ($h-height + 1em) auto 5em auto
+    max-width: $center
+    width: calc(100vw - 2em)
+    min-height: 100vh
+
+.banner
+    padding: 1em 0
+    font-size: 2rem
+    line-height: 1.25
+    background: $light-grey
+    box-shadow: -50vw 0 $light-grey, 50vw 0 $light-grey
+    margin-bottom: 1em
+
+    .updated
+        display: block
+        font-size: 0.8rem
+        color: $med-grey
+        margin: 0.6rem auto -0.4rem
+
+
+footer
+    padding: 1.5em 1em
+    width: 100vw
+    background-color: $dark-grey
+    font-size: 10pt
+    color: $grey
+
+    div
+        margin: 0 auto
+        width: 100%
+        max-width: $center
+
+    a
+        color: $grey
+
+footer.print
+    display: none
+
+
+h1, h2, h3, h4
+    line-height: 1.15
+
+.spacer
+    flex-grow: 1
+    flex-basis: 1em
+
+a.anchor
+    display: block
+    position: relative
+    top: -5em
+    visibility: hidden
+
+b
+    font-weight: bold
+
+svg:empty
+    background: $blue
+
+// MathJax fix
+.mjx-chtml
+    outline: none
+
+@media screen and (max-width: $break-med)
+    nav
+        display: none
+
+    header .spacer
+        display: none
+
+    .banner
+        font-size: 1.5rem
+
+@media screen and (max-width: $break-small)
+    header h1
+        font-size: 1.2rem
+
+    main
+        width: calc(100vw - 1em)
+
+
+@media print
+    @page
+        size: portrait
+
+    *
+        -webkit-print-color-adjust: exact
+
+    header
+        position: absolute
+
+        .spacer, nav
+            display: none
+
+    .banner
+        background: white
+        text-align: center
+
+    section
+        orphans: 5
+
+    .content-block
+        page-break-inside: avoid
+
+    footer
+        background: white
+        color: $dark-grey
+        text-align: center
+
+        a
+            display: none

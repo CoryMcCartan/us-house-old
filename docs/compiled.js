@@ -16896,7 +16896,8 @@ function overview(data, el) {
     let currentAngle = currentSeats / 435 * Math.PI;
     let demAngle = data.seats / 435 * Math.PI;
     let gopAngle = Math.PI - demAngle;
-    let errAngle = MOE * data.seats_std / 435 * Math.PI;
+    let minAngle = data.seats_min / 435 * Math.PI;
+    let maxAngle = data.seats_max / 435 * Math.PI;
 
     let left = -Math.PI / 2;
     let right = Math.PI / 2;
@@ -16905,7 +16906,7 @@ function overview(data, el) {
         .datum({ startAngle: left, endAngle: left + demAngle })
         .style("fill", BLUE);
     let dem_error = g.append("path")
-        .datum({ startAngle: left + demAngle - errAngle, 
+        .datum({ startAngle: left + minAngle,
                  endAngle: left + demAngle })
         .style("fill", LIGHT_BLUE);
     let dem_gain = g.append("path")
@@ -16918,7 +16919,7 @@ function overview(data, el) {
         .style("fill", RED);
     let gop_error = g.append("path")
         .datum({ startAngle: right - gopAngle,
-                 endAngle: right - gopAngle + errAngle })
+                 endAngle: left + maxAngle })
         .style("fill", LIGHT_RED);
 
     let centerLine = g.append("line")
@@ -17546,22 +17547,23 @@ function outcomes(data, el) {
         };
     }
 
-    let mean$$1 = Math.round(data.seats);
+    let median$$1 = Math.round(data.seats);
     let sds = bigScreen() ? 1.05 : 0.85;
-    let margin = Math.round(sds * data.seats_std);
-    hist = hist.slice(mean$$1 - margin, mean$$1 + margin);
+    let min_s = Math.round(data.seats_min);
+    let max_s = Math.round(data.seats_max);
+    hist = hist.slice(min_s, max_s);
 
     let rows = table.selectAll("tr")
         .data(hist)
         .enter().append("tr")
-        .attr("class", (d, i) => i - margin == 0 ? "expected" : "");
+        .attr("class", (d, i) => i - (median$$1 - min_s) == 0 ? "expected" : "");
 
     let maxProb = max(data.seats_dist);
     let pctFormat = format(".0%");
     let gainFormat = format("+");
     let cells = rows.selectAll("td")
         .data((d, i) => {
-            let s = mean$$1 - margin + i; 
+            let s = min_s + i; 
             return [s, 435-s, s-217.5, s-currentSeats, 1-d.cuml, [d.prob/maxProb, s], s];
         })
         .enter().append("td")
@@ -17576,7 +17578,7 @@ function outcomes(data, el) {
             `<div class="hist-bar" style="width: ${pctFormat(d[0])}; 
                 background-color: ${d[1] >= 218 ? BLUE:RED}"></div>`,
             d == currentSeats ? "◀ Current" : 
-            d == mean$$1 ? "◀ Expected" : "",
+            d == median$$1 ? "◀ Expected" : "",
         ][i])
         .attr("class", (d, i) => [,,"maj","gain",,"hist","label"][i]);
 }

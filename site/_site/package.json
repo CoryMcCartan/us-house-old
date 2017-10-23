@@ -1,0 +1,32 @@
+{
+  "name": "us-house",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "",
+    "build:js:compile": "rollup -c",
+    "build:js:minify": "pushd ../docs/ && uglifyjs compiled.js -o compiled.min.js -c -m --source-map content=compiled.js.map,url=compiled.min.js.map && popd",
+    "build:js": "npm run build:js:compile && npm run build:js:minify",
+    "build:css": "node-sass --output-style=compressed --source-map=true css/main.sass ../docs/main.css",
+    "build": "cp index.html ../docs/ && npm run build:js && npm run build:css",
+    "watch:js": "onchange 'js/*.js' -- npm run build:js",
+    "watch:css": "onchange 'css/*.sass' -- npm run build:css",
+    "watch:html": "onchange 'index.html' -- cp index.html ../docs/",
+    "watch": "npm run watch:js & npm run watch:css & npm run watch:html & ",
+    "start": "cd ../docs/ && python3 -m http.server",
+    "dev": "npm run watch & npm start",
+    "clean": "rm ../docs/*.js && rm ../docs/*.map &&  rm ../docs/main.css"
+  },
+  "repository": "https://github.com/CoryMcCartan/us-house",
+  "author": "Cory McCartan",
+  "license": "ISC",
+  "devDependencies": {
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "uglify-es": "^3.0.27"
+  },
+  "dependencies": {
+    "d3": "^4.9.1"
+  }
+}

@@ -28,8 +28,7 @@ function overview(data, el) {
     let currentAngle = currentSeats / 435 * Math.PI;
     let demAngle = data.seats / 435 * Math.PI;
     let gopAngle = Math.PI - demAngle;
-    let minAngle = data.seats_min / 435 * Math.PI;
-    let maxAngle = data.seats_max / 435 * Math.PI;
+    let errAngle = MOE * data.seats_std / 435 * Math.PI;
 
     let left = -Math.PI / 2
     let right = Math.PI / 2
@@ -38,7 +37,7 @@ function overview(data, el) {
         .datum({ startAngle: left, endAngle: left + demAngle })
         .style("fill", BLUE);
     let dem_error = g.append("path")
-        .datum({ startAngle: left + minAngle,
+        .datum({ startAngle: left + demAngle - errAngle, 
                  endAngle: left + demAngle })
         .style("fill", LIGHT_BLUE);
     let dem_gain = g.append("path")
@@ -51,7 +50,7 @@ function overview(data, el) {
         .style("fill", RED);
     let gop_error = g.append("path")
         .datum({ startAngle: right - gopAngle,
-                 endAngle: left + maxAngle })
+                 endAngle: right - gopAngle + errAngle })
         .style("fill", LIGHT_RED);
 
     let centerLine = g.append("line")
@@ -710,7 +709,7 @@ function outcomes(data, el) {
             `<div class="hist-bar" style="width: ${pctFormat(d[0])}; 
                 background-color: ${d[1] >= 218 ? BLUE:RED}"></div>`,
             d == currentSeats ? "◀ Current" : 
-            d == median ? "◀ Expected" : "",
+            d == mean ? "◀ Expected" : "",
         ][i])
         .attr("class", (d, i) => [,,"maj","gain",,"hist","label"][i]);
 }
